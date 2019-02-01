@@ -1,5 +1,5 @@
 {
-    "name": "Thedigit/horizon",
+    "name": "thedigit/horizon",
     "description": "Dashboard and code-driven configuration for Laravel queues. Laravel 5.4",
     "keywords": [
         "laravel",
@@ -36,12 +36,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Vzool\\Horizon\\": "src/"
+            "Thedigit\\Horizon\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Vzool\\Horizon\\Tests\\": "tests/"
+            "Thedigit\\Horizon\\Tests\\": "tests/"
         }
     },
     "extra": {
@@ -50,10 +50,10 @@
         },
         "laravel": {
             "providers": [
-                "Vzool\\Horizon\\HorizonServiceProvider"
+                "Thedigit\\Horizon\\HorizonServiceProvider"
             ],
             "aliases": {
-                "Horizon": "Vzool\\Horizon\\Horizon"
+                "Horizon": "Thedigit\\Horizon\\Horizon"
             }
         }
     },
