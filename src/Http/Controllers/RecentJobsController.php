@@ -1,23 +1,23 @@
 <?php
 
-namespace Laravel\Horizon\Http\Controllers;
+namespace Vzool\Horizon\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Laravel\Horizon\Contracts\JobRepository;
+use Vzool\Horizon\Contracts\JobRepository;
 
 class RecentJobsController extends Controller
 {
     /**
      * The job repository implementation.
      *
-     * @var JobRepository
+     * @var \Vzool\Horizon\Contracts\JobRepository
      */
     public $jobs;
 
     /**
      * Create a new controller instance.
      *
-     * @param  JobRepository $jobs
+     * @param  \Vzool\Horizon\Contracts\JobRepository  $jobs
      * @return void
      */
     public function __construct(JobRepository $jobs)
@@ -31,7 +31,7 @@ class RecentJobsController extends Controller
      * Get all of the recent jobs.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function index(Request $request)
     {

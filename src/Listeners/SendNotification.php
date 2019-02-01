@@ -1,9 +1,9 @@
 <?php
 
-namespace Laravel\Horizon\Listeners;
+namespace Vzool\Horizon\Listeners;
 
-use Laravel\Horizon\Lock;
-use Laravel\Horizon\Horizon;
+use Vzool\Horizon\Lock;
+use Vzool\Horizon\Horizon;
 use Illuminate\Support\Facades\Notification;
 
 class SendNotification
@@ -18,12 +18,13 @@ class SendNotification
     {
         $notification = $event->toNotification();
 
-        if (! resolve(Lock::class)->get('notification:'.$notification->signature(), 300)) {
+        if (! app(Lock::class)->get('notification:'.$notification->signature(), 300)) {
             return;
         }
 
         Notification::route('slack', Horizon::$slackWebhookUrl)
                     ->route('nexmo', Horizon::$smsNumber)
+                    ->route('mail', Horizon::$email)
                     ->notify($notification);
     }
 }

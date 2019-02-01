@@ -1,9 +1,9 @@
 <?php
 
-namespace Laravel\Horizon\Console;
+namespace Vzool\Horizon\Console;
 
 use Illuminate\Console\Command;
-use Laravel\Horizon\Contracts\MasterSupervisorRepository;
+use Vzool\Horizon\Contracts\MasterSupervisorRepository;
 
 class ListCommand extends Command
 {
@@ -24,11 +24,11 @@ class ListCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
     public function handle()
     {
-        $repository = resolve(MasterSupervisorRepository::class);
+        $repository = app(MasterSupervisorRepository::class);
 
         $masters = $repository->all();
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
 
 use Symfony\Component\Process\Process;
 
@@ -16,7 +16,6 @@ class SystemProcessCounter
     /**
      * Get the number of Horizon workers for a given supervisor.
      *
-     * @param  string  $master
      * @param  string  $name
      * @return int
      */

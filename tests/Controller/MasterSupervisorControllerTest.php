@@ -1,22 +1,17 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Controller;
+namespace Vzool\Horizon\Tests\Controller;
 
-use Laravel\Horizon\Horizon;
-use Laravel\Horizon\Supervisor;
-use Laravel\Horizon\MasterSupervisor;
-use Laravel\Horizon\SupervisorOptions;
-use Laravel\Horizon\Tests\IntegrationTest;
-use Laravel\Horizon\Contracts\SupervisorRepository;
-use Laravel\Horizon\Contracts\MasterSupervisorRepository;
+use Vzool\Horizon\Supervisor;
+use Vzool\Horizon\MasterSupervisor;
+use Vzool\Horizon\SupervisorOptions;
+use Vzool\Horizon\Contracts\SupervisorRepository;
+use Vzool\Horizon\Contracts\MasterSupervisorRepository;
 
-class MasterSupervisorControllerTest extends IntegrationTest
+class MasterSupervisorControllerTest extends AbstractControllerTest
 {
     public function test_master_supervisor_listing_without_supervisors()
     {
-        Horizon::auth(function () {
-            return true;
-        });
         $master = new MasterSupervisor;
         $master->name = 'risa';
         resolve(MasterSupervisorRepository::class)->update($master);
@@ -29,16 +24,12 @@ class MasterSupervisorControllerTest extends IntegrationTest
 
         $response->assertJson([
             'risa' => ['name' => 'risa', 'status' => 'running'],
-            'risa-2' => ['name' => 'risa-2', 'status' => 'running']
+            'risa-2' => ['name' => 'risa-2', 'status' => 'running'],
         ]);
     }
 
-
     public function test_master_supervisor_listing_with_supervisors()
     {
-        Horizon::auth(function () {
-            return true;
-        });
         $master = new MasterSupervisor;
         $master->name = 'risa';
         resolve(MasterSupervisorRepository::class)->update($master);
@@ -61,7 +52,7 @@ class MasterSupervisorControllerTest extends IntegrationTest
                         'name' => 'risa:name',
                         'master' => 'risa',
                         'status' => 'running',
-                        'processes' => ['redis:default' => 0]
+                        'processes' => ['redis:default' => 0],
                     ],
                 ],
             ],

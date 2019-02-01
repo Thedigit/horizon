@@ -1,9 +1,9 @@
 <?php
 
-namespace Laravel\Horizon\Listeners;
+namespace Vzool\Horizon\Listeners;
 
 use Illuminate\Queue\Jobs\RedisJob;
-use Laravel\Horizon\Events\JobFailed;
+use Vzool\Horizon\Events\JobFailed;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Queue\Events\JobFailed as LaravelJobFailed;
 
@@ -12,14 +12,14 @@ class MarshalFailedEvent
     /**
      * The event dispatcher implementation.
      *
-     * @var Dispatcher
+     * @var \Illuminate\Contracts\Events\Dispatcher
      */
     public $events;
 
     /**
      * Create a new listener instance.
      *
-     * @param  Dispatcher  $events
+     * @param  \Illuminate\Contracts\Events\Dispatcher  $events
      * @return void
      */
     public function __construct(Dispatcher $events)
@@ -30,7 +30,7 @@ class MarshalFailedEvent
     /**
      * Handle the event.
      *
-     * @param  LaravelJobFailed  $event
+     * @param  \Illuminate\Queue\Events\JobFailed  $event
      * @return void
      */
     public function handle(LaravelJobFailed $event)

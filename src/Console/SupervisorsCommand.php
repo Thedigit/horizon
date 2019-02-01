@@ -1,9 +1,9 @@
 <?php
 
-namespace Laravel\Horizon\Console;
+namespace Vzool\Horizon\Console;
 
 use Illuminate\Console\Command;
-use Laravel\Horizon\Contracts\SupervisorRepository;
+use Vzool\Horizon\Contracts\SupervisorRepository;
 
 class SupervisorsCommand extends Command
 {
@@ -24,11 +24,11 @@ class SupervisorsCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
     public function handle()
     {
-        $repository = resolve(SupervisorRepository::class);
+        $repository = app(SupervisorRepository::class);
 
         $supervisors = $repository->all();
 

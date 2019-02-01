@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Horizon\Contracts;
+namespace Vzool\Horizon\Contracts;
 
 interface ProcessRepository
 {
@@ -16,6 +16,7 @@ interface ProcessRepository
      * Record the given process IDs as orphaned.
      *
      * @param  string  $master
+     * @param  array  $processIds
      * @return array
      */
     public function orphaned($master, array $processIds);

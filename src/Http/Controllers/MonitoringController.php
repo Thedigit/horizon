@@ -1,34 +1,34 @@
 <?php
 
-namespace Laravel\Horizon\Http\Controllers;
+namespace Vzool\Horizon\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Laravel\Horizon\Jobs\MonitorTag;
-use Laravel\Horizon\Jobs\StopMonitoringTag;
-use Laravel\Horizon\Contracts\JobRepository;
-use Laravel\Horizon\Contracts\TagRepository;
+use Vzool\Horizon\Jobs\MonitorTag;
+use Vzool\Horizon\Jobs\StopMonitoringTag;
+use Vzool\Horizon\Contracts\JobRepository;
+use Vzool\Horizon\Contracts\TagRepository;
 
 class MonitoringController extends Controller
 {
     /**
      * The job repository implementation.
      *
-     * @var JobRepository
+     * @var \Vzool\Horizon\Contracts\JobRepository
      */
     public $jobs;
 
     /**
      * The tag repository implementation.
      *
-     * @var TagRepository
+     * @var \Vzool\Horizon\Contracts\TagRepository
      */
     public $tags;
 
     /**
      * Create a new controller instance.
      *
-     * @param  JobRepository  $jobs
-     * @param  TagRepository  $tags
+     * @param  \Vzool\Horizon\Contracts\JobRepository  $jobs
+     * @param  \Vzool\Horizon\Contracts\TagRepository  $tags
      * @return void
      */
     public function __construct(JobRepository $jobs, TagRepository $tags)
@@ -42,14 +42,14 @@ class MonitoringController extends Controller
     /**
      * Get all of the monitored tags and their job counts.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Support\Collection
      */
     public function index()
     {
         return collect($this->tags->monitoring())->map(function ($tag) {
             return [
                 'tag' => $tag,
-                'count' => $this->tags->count($tag) + $this->tags->count('failed:'.$tag)
+                'count' => $this->tags->count($tag) + $this->tags->count('failed:'.$tag),
             ];
         })->sortBy('tag')->values();
     }
@@ -57,9 +57,9 @@ class MonitoringController extends Controller
     /**
      * Paginate the jobs for a given tag.
      *
-     * @param  Request  $request
+     * @param  \Illuminate\Http\Request  $request
      * @param  string  $tag
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function paginate(Request $request, $tag)
     {
@@ -93,8 +93,8 @@ class MonitoringController extends Controller
     /**
      * Start monitoring the given tag.
      *
-     * @param  Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
      */
     public function store(Request $request)
     {
@@ -105,7 +105,7 @@ class MonitoringController extends Controller
      * Stop monitoring the given tag.
      *
      * @param  string  $tag
-     * @return \Illuminate\Http\Response
+     * @return void
      */
     public function destroy($tag)
     {

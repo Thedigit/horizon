@@ -1,8 +1,8 @@
 <?php
 
-namespace Laravel\Horizon\Contracts;
+namespace Vzool\Horizon\Contracts;
 
-use Laravel\Horizon\MasterSupervisor;
+use Vzool\Horizon\MasterSupervisor;
 
 interface MasterSupervisorRepository
 {
@@ -39,7 +39,7 @@ interface MasterSupervisorRepository
     /**
      * Update the information about the given master supervisor.
      *
-     * @param  MasterSupervisor  $master
+     * @param  \Vzool\Horizon\MasterSupervisor  $master
      * @return void
      */
     public function update(MasterSupervisor $master);
@@ -51,4 +51,11 @@ interface MasterSupervisorRepository
      * @return void
      */
     public function forget($name);
+
+    /**
+     * Remove expired master supervisors from storage.
+     *
+     * @return void
+     */
+    public function flushExpired();
 }

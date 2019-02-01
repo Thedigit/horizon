@@ -1,9 +1,9 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
 
-use Laravel\Horizon\Contracts\MetricsRepository;
-use Laravel\Horizon\Contracts\SupervisorRepository;
+use Vzool\Horizon\Contracts\MetricsRepository;
+use Vzool\Horizon\Contracts\SupervisorRepository;
 use Illuminate\Contracts\Queue\Factory as QueueFactory;
 
 class WaitTimeCalculator
@@ -11,30 +11,30 @@ class WaitTimeCalculator
     /**
      * The queue factory implementation.
      *
-     * @var QueueFactory
+     * @var \Illuminate\Contracts\Queue\Factory
      */
     public $queue;
 
     /**
      * The supervisor repository implementation.
      *
-     * @var SupervisorRepository
+     * @var \Vzool\Horizon\Contracts\SupervisorRepository
      */
     public $supervisors;
 
     /**
      * The metrics repository implementation.
      *
-     * @var MetricsRepository
+     * @var \Vzool\Horizon\Contracts\MetricsRepository
      */
     public $metrics;
 
     /**
      * Create a new calculator instance.
      *
-     * @param  QueueFactory  $queue
-     * @param  SupervisorRepository  $supervisors
-     * @param  MetricsRepository  $metrics
+     * @param  \Illuminate\Contracts\Queue\Factory  $queue
+     * @param  \Vzool\Horizon\Contracts\SupervisorRepository  $supervisors
+     * @param  \Vzool\Horizon\Contracts\MetricsRepository  $metrics
      * @return void
      */
     public function __construct(QueueFactory $queue,
@@ -72,11 +72,17 @@ class WaitTimeCalculator
         return $queues->mapWithKeys(function ($queue) use ($supervisors) {
             $totalProcesses = $this->totalProcessesFor($supervisors, $queue);
 
-            [$connection, $name] = explode(':', $queue, 2);
+            [$connection, $queueName] = explode(':', $queue, 2);
+
+            $timeToClear = ! str_contains($queueName, ',')
+                ? $this->timeToClearFor($connection, $queueName)
+                : collect(explode(',', $queueName))->sum(function ($queueName) use ($connection) {
+                    return $this->timeToClearFor($connection, $queueName);
+                });
 
             return $totalProcesses === 0
-                    ? [$queue => round($this->timeToClearFor($connection, $name) / 1000)]
-                    : [$queue => round(($this->timeToClearFor($connection, $name) / $totalProcesses) / 1000)];
+                    ? [$queue => round($timeToClear / 1000)]
+                    : [$queue => round(($timeToClear / $totalProcesses) / 1000)];
         })->sort()->reverse()->all();
     }
 

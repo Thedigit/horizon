@@ -1,14 +1,14 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
 
 class SupervisorFactory
 {
     /**
      * Create a new supervisor instance.
      *
-     * @param  SupervisorOptions  $options
-     * @return void
+     * @param  \Vzool\Horizon\SupervisorOptions  $options
+     * @return \Vzool\Horizon\Supervisor
      */
     public function make(SupervisorOptions $options)
     {

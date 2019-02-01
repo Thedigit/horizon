@@ -1,31 +1,31 @@
 <?php
 
-namespace Laravel\Horizon\Http\Controllers;
+namespace Vzool\Horizon\Http\Controllers;
 
-use Laravel\Horizon\WaitTimeCalculator;
-use Laravel\Horizon\Contracts\JobRepository;
-use Laravel\Horizon\Contracts\MetricsRepository;
-use Laravel\Horizon\Contracts\SupervisorRepository;
-use Laravel\Horizon\Contracts\MasterSupervisorRepository;
+use Vzool\Horizon\WaitTimeCalculator;
+use Vzool\Horizon\Contracts\JobRepository;
+use Vzool\Horizon\Contracts\MetricsRepository;
+use Vzool\Horizon\Contracts\SupervisorRepository;
+use Vzool\Horizon\Contracts\MasterSupervisorRepository;
 
 class DashboardStatsController extends Controller
 {
     /**
      * Get the key performance stats for the dashboard.
      *
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function index()
     {
         return [
-            'jobsPerMinute' => resolve(MetricsRepository::class)->jobsProcessedPerMinute(),
+            'jobsPerMinute' => app(MetricsRepository::class)->jobsProcessedPerMinute(),
             'processes' => $this->totalProcessCount(),
-            'queueWithMaxRuntime' => resolve(MetricsRepository::class)->queueWithMaximumRuntime(),
-            'queueWithMaxThroughput' => resolve(MetricsRepository::class)->queueWithMaximumThroughput(),
-            'recentlyFailed' => resolve(JobRepository::class)->countRecentlyFailed(),
-            'recentJobs' => resolve(JobRepository::class)->countRecent(),
+            'queueWithMaxRuntime' => app(MetricsRepository::class)->queueWithMaximumRuntime(),
+            'queueWithMaxThroughput' => app(MetricsRepository::class)->queueWithMaximumThroughput(),
+            'recentlyFailed' => app(JobRepository::class)->countRecentlyFailed(),
+            'recentJobs' => app(JobRepository::class)->countRecent(),
             'status' => $this->currentStatus(),
-            'wait' => collect(resolve(WaitTimeCalculator::class)->calculate())->take(1),
+            'wait' => collect(app(WaitTimeCalculator::class)->calculate())->take(1),
         ];
     }
 
@@ -36,7 +36,7 @@ class DashboardStatsController extends Controller
      */
     protected function totalProcessCount()
     {
-        $supervisors = resolve(SupervisorRepository::class)->all();
+        $supervisors = app(SupervisorRepository::class)->all();
 
         return collect($supervisors)->reduce(function ($carry, $supervisor) {
             return $carry + collect($supervisor->processes)->sum();
@@ -50,12 +50,12 @@ class DashboardStatsController extends Controller
      */
     protected function currentStatus()
     {
-        if (! $masters = resolve(MasterSupervisorRepository::class)->all()) {
+        if (! $masters = app(MasterSupervisorRepository::class)->all()) {
             return 'inactive';
         }
 
         return collect($masters)->contains(function ($master) {
-            return $master->status == 'paused';
+            return $master->status === 'paused';
         }) ? 'paused' : 'running';
     }
 }

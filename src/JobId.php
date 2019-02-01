@@ -1,6 +1,8 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
+
+use Vzool\Horizon\Contracts\JobRepository;
 
 class JobId
 {
@@ -22,13 +24,14 @@ class JobId
             return call_user_func(static::$generator);
         }
 
-        return resolve(Contracts\JobRepository::class)->nextJobId();
+        return app(JobRepository::class)->nextJobId();
     }
 
     /**
      * Define a custom job ID generator.
      *
      * @param  \Closure|null  $callback
+     * @return void
      */
     public static function generateUsing($callback)
     {

@@ -1,22 +1,22 @@
 <?php
 
-namespace Laravel\Horizon\Http\Controllers;
+namespace Vzool\Horizon\Http\Controllers;
 
-use Laravel\Horizon\Contracts\MetricsRepository;
+use Vzool\Horizon\Contracts\MetricsRepository;
 
 class QueueMetricsController extends Controller
 {
     /**
      * The metrics repository implementation.
      *
-     * @var MetricsRepository
+     * @var \Vzool\Horizon\Contracts\MetricsRepository
      */
     public $metrics;
 
     /**
      * Create a new controller instance.
      *
-     * @param  MetricsRepository  $jobs
+     * @param  \Vzool\Horizon\Contracts\MetricsRepository  $metrics
      * @return void
      */
     public function __construct(MetricsRepository $metrics)
@@ -29,7 +29,7 @@ class QueueMetricsController extends Controller
     /**
      * Get all of the measured queues.
      *
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function index()
     {
@@ -40,7 +40,7 @@ class QueueMetricsController extends Controller
      * Get metrics for a given queue.
      *
      * @param  string  $slug
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Support\Collection
      */
     public function show($slug)
     {

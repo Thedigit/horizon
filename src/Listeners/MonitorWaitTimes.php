@@ -1,33 +1,33 @@
 <?php
 
-namespace Laravel\Horizon\Listeners;
+namespace Vzool\Horizon\Listeners;
 
 use Cake\Chronos\Chronos;
-use Laravel\Horizon\WaitTimeCalculator;
-use Laravel\Horizon\Events\LongWaitDetected;
-use Laravel\Horizon\Events\SupervisorLooped;
-use Laravel\Horizon\Contracts\MetricsRepository;
+use Vzool\Horizon\WaitTimeCalculator;
+use Vzool\Horizon\Events\LongWaitDetected;
+use Vzool\Horizon\Events\SupervisorLooped;
+use Vzool\Horizon\Contracts\MetricsRepository;
 
 class MonitorWaitTimes
 {
     /**
      * The metrics repository implementation.
      *
-     * @var MetricsRepository
+     * @var \Vzool\Horizon\Contracts\MetricsRepository
      */
     public $metrics;
 
     /**
      * The time at which we last checked if monitoring was due.
      *
-     * @var Chronos
+     * @var \Cake\Chronos\Chronos
      */
     public $lastMonitored;
 
     /**
      * Create a new listener instance.
      *
-     * @param  MetricsRepository  $metrics
+     * @param  \Vzool\Horizon\Contracts\MetricsRepository  $metrics
      * @return void
      */
     public function __construct(MetricsRepository $metrics)
@@ -38,7 +38,7 @@ class MonitorWaitTimes
     /**
      * Handle the event.
      *
-     * @param  SupervisorLooped  $event
+     * @param  \Vzool\Horizon\Events\SupervisorLooped  $event
      * @return void
      */
     public function handle(SupervisorLooped $event)
@@ -50,7 +50,7 @@ class MonitorWaitTimes
         // Here we will calculate the wait time in seconds for each of the queues that
         // the application is working. Then, we will filter the results to find the
         // queues with the longest wait times and raise events for each of these.
-        $results = resolve(WaitTimeCalculator::class)->calculate();
+        $results = app(WaitTimeCalculator::class)->calculate();
 
         $long = collect($results)->filter(function ($wait, $queue) {
             return $wait > (config("horizon.waits.{$queue}") ?? 60);
@@ -93,7 +93,7 @@ class MonitorWaitTimes
     }
 
     /**
-     * Detemrine if enough time has elapsed to attempt to monitor.
+     * Determine if enough time has elapsed to attempt to monitor.
      *
      * @return bool
      */

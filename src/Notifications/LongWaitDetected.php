@@ -1,12 +1,13 @@
 <?php
 
-namespace Laravel\Horizon\Notifications;
+namespace Vzool\Horizon\Notifications;
 
-use Laravel\Horizon\Horizon;
+use Illuminate\Notifications\Messages\MailMessage;
+use Vzool\Horizon\Horizon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Messages\NexmoMessage;
+use Illuminate\Notifications\Messages\SlackMessage;
 
 class LongWaitDetected extends Notification
 {
@@ -17,14 +18,14 @@ class LongWaitDetected extends Notification
      *
      * @var string
      */
-    public $connection;
+    public $longWaitConnection;
 
     /**
      * The queue name.
      *
      * @var string
      */
-    public $queue;
+    public $longWaitQueue;
 
     /**
      * The wait time in seconds.
@@ -43,9 +44,9 @@ class LongWaitDetected extends Notification
      */
     public function __construct($connection, $queue, $seconds)
     {
-        $this->queue = $queue;
+        $this->longWaitQueue = $queue;
         $this->seconds = $seconds;
-        $this->connection = $connection;
+        $this->longWaitConnection = $connection;
     }
 
     /**
@@ -59,19 +60,39 @@ class LongWaitDetected extends Notification
         return array_filter([
             Horizon::$slackWebhookUrl ? 'slack' : null,
             Horizon::$smsNumber ? 'nexmo' : null,
+            Horizon::$email ? 'mail' : null,
         ]);
+    }
+
+    /**
+     * Get the mail representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return \Illuminate\Notifications\Messages\MailMessage
+     */
+    public function toMail($notifiable)
+    {
+        return (new MailMessage)
+            ->error()
+            ->subject(config('app.name').': Long Queue Wait Detected')
+            ->greeting('Oh no! Something needs your attention.')
+            ->line(sprintf(
+                 'The "%s" queue on the "%s" connection has a wait time of %s seconds.',
+                $this->longWaitQueue, $this->longWaitConnection, $this->seconds
+            ));
     }
 
     /**
      * Get the Slack representation of the notification.
      *
      * @param  mixed  $notifiable
-     * @return SlackMessage
+     * @return \Illuminate\Notifications\Messages\SlackMessage
      */
     public function toSlack($notifiable)
     {
         return (new SlackMessage)
                     ->from('Laravel Horizon')
+                    ->to(Horizon::$slackChannel)
                     ->image('https://laravel.com/assets/img/horizon-48px.png')
                     ->error()
                     ->content('Oh no! Something needs your attention.')
@@ -79,7 +100,7 @@ class LongWaitDetected extends Notification
                         $attachment->title('Long Wait Detected')
                                    ->content(sprintf(
                                         '[%s] The "%s" queue on the "%s" connection has a wait time of %s seconds.',
-                                       config('app.name'), $this->queue, $this->connection, $this->seconds
+                                       config('app.name'), $this->longWaitQueue, $this->longWaitConnection, $this->seconds
                                    ));
                     });
     }
@@ -88,13 +109,13 @@ class LongWaitDetected extends Notification
      * Get the Nexmo / SMS representation of the notification.
      *
      * @param  mixed  $notifiable
-     * @return NexmoMessage
+     * @return \Illuminate\Notifications\Messages\NexmoMessage
      */
     public function toNexmo($notifiable)
     {
         return (new NexmoMessage)->content(sprintf(
             '[%s] The "%s" queue on the "%s" connection has a wait time of %s seconds.',
-            config('app.name'), $this->queue, $this->connection, $this->seconds
+            config('app.name'), $this->longWaitQueue, $this->longWaitConnection, $this->seconds
         ));
     }
 
@@ -105,6 +126,6 @@ class LongWaitDetected extends Notification
      */
     public function signature()
     {
-        return md5($this->connection.$this->queue);
+        return md5($this->longWaitConnection.$this->longWaitQueue);
     }
 }

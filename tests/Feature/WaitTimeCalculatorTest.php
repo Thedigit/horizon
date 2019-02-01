@@ -1,14 +1,14 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Feature;
+namespace Vzool\Horizon\Tests\Feature;
 
 use Mockery;
-use Laravel\Horizon\Supervisor;
-use Laravel\Horizon\SupervisorOptions;
-use Laravel\Horizon\WaitTimeCalculator;
-use Laravel\Horizon\Tests\IntegrationTest;
-use Laravel\Horizon\Contracts\MetricsRepository;
-use Laravel\Horizon\Contracts\SupervisorRepository;
+use Vzool\Horizon\Supervisor;
+use Vzool\Horizon\SupervisorOptions;
+use Vzool\Horizon\WaitTimeCalculator;
+use Vzool\Horizon\Tests\IntegrationTest;
+use Vzool\Horizon\Contracts\MetricsRepository;
+use Vzool\Horizon\Contracts\SupervisorRepository;
 use Illuminate\Contracts\Queue\Factory as QueueFactory;
 
 class WaitTimeCalculatorTest extends IntegrationTest
@@ -38,7 +38,6 @@ class WaitTimeCalculatorTest extends IntegrationTest
             $calculator->calculate()
         );
     }
-
 
     public function test_multiple_queues_are_supported()
     {
@@ -75,7 +74,6 @@ class WaitTimeCalculatorTest extends IntegrationTest
         );
     }
 
-
     public function test_single_queue_can_be_retrieved_for_multiple_queues()
     {
         $calculator = $this->with_scenario([
@@ -111,7 +109,6 @@ class WaitTimeCalculatorTest extends IntegrationTest
         );
     }
 
-
     public function test_time_to_clear_can_be_zero()
     {
         $calculator = $this->with_scenario([
@@ -132,7 +129,6 @@ class WaitTimeCalculatorTest extends IntegrationTest
             $calculator->calculate()
         );
     }
-
 
     public function test_total_processes_can_be_zero()
     {
@@ -155,7 +151,6 @@ class WaitTimeCalculatorTest extends IntegrationTest
         );
     }
 
-
     protected function with_scenario(array $supervisorSettings, array $queues)
     {
         $queue = Mockery::mock(QueueFactory::class);
@@ -172,7 +167,6 @@ class WaitTimeCalculatorTest extends IntegrationTest
 
         return new WaitTimeCalculator($queue, $supervisors, $metrics);
     }
-
 
     protected function options()
     {

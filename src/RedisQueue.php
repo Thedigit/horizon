@@ -1,13 +1,13 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
 
 use Illuminate\Support\Str;
-use Laravel\Horizon\Events\JobPushed;
-use Laravel\Horizon\Events\JobDeleted;
-use Laravel\Horizon\Events\JobReleased;
-use Laravel\Horizon\Events\JobReserved;
-use Laravel\Horizon\Events\JobsMigrated;
+use Vzool\Horizon\Events\JobPushed;
+use Vzool\Horizon\Events\JobDeleted;
+use Vzool\Horizon\Events\JobReleased;
+use Vzool\Horizon\Events\JobReserved;
+use Vzool\Horizon\Events\JobsMigrated;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Queue\RedisQueue as BaseQueue;
 
@@ -23,7 +23,7 @@ class RedisQueue extends BaseQueue
     /**
      * Get the number of queue jobs that are ready to process.
      *
-     * @param  string  $queue
+     * @param  string|null  $queue
      * @return int
      */
     public function readyNow($queue = null)
@@ -35,8 +35,8 @@ class RedisQueue extends BaseQueue
      * Push a new job onto the queue.
      *
      * @param  object|string  $job
-     * @param  mixed   $data
-     * @param  string  $queue
+     * @param  mixed  $data
+     * @param  string|null  $queue
      * @return mixed
      */
     public function push($job, $data = '', $queue = null)
@@ -51,7 +51,7 @@ class RedisQueue extends BaseQueue
      *
      * @param  string  $payload
      * @param  string  $queue
-     * @param  array   $options
+     * @param  array  $options
      * @return mixed
      */
     public function pushRaw($payload, $queue = null, array $options = [])
@@ -66,9 +66,9 @@ class RedisQueue extends BaseQueue
     /**
      * Push a new job onto the queue after a delay.
      *
-     * @param  \DateTime|int  $delay
+     * @param  \DateTimeInterface|\DateInterval|int  $delay
      * @param  string  $job
-     * @param  mixed   $data
+     * @param  mixed  $data
      * @param  string  $queue
      * @return mixed
      */
@@ -114,7 +114,7 @@ class RedisQueue extends BaseQueue
      * Delete a reserved job from the queue.
      *
      * @param  string  $queue
-     * @param  \Illuminate\Queues\Jobs\RedisJob  $job
+     * @param  \Illuminate\Queue\Jobs\RedisJob  $job
      * @return void
      */
     public function deleteReserved($queue, $job)
@@ -128,7 +128,7 @@ class RedisQueue extends BaseQueue
      * Delete a reserved job from the reserved queue and release it.
      *
      * @param  string  $queue
-     * @param  \Illuminate\Queues\Jobs\RedisJob  $job
+     * @param  \Illuminate\Queue\Jobs\RedisJob  $job
      * @param  int  $delay
      * @return void
      */
@@ -142,7 +142,7 @@ class RedisQueue extends BaseQueue
     /**
      * Fire the given event if a dispatcher is bound.
      *
-     * @param  string  $event
+     * @param  string  $queue
      * @param  mixed  $event
      * @return void
      */

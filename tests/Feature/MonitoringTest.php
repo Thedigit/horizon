@@ -1,13 +1,13 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Feature;
+namespace Vzool\Horizon\Tests\Feature;
 
-use Laravel\Horizon\Jobs\MonitorTag;
+use Vzool\Horizon\Jobs\MonitorTag;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
-use Laravel\Horizon\Tests\IntegrationTest;
-use Laravel\Horizon\Jobs\StopMonitoringTag;
-use Laravel\Horizon\Contracts\TagRepository;
+use Vzool\Horizon\Tests\IntegrationTest;
+use Vzool\Horizon\Jobs\StopMonitoringTag;
+use Vzool\Horizon\Contracts\TagRepository;
 
 class MonitoringTest extends IntegrationTest
 {
@@ -22,9 +22,8 @@ class MonitoringTest extends IntegrationTest
         $monitored = $repository->monitoring();
         $this->assertTrue(in_array('first', $monitored));
         $this->assertTrue(in_array('second', $monitored));
-        $this->assertEquals(2, count($monitored));
+        $this->assertCount(2, $monitored);
     }
-
 
     public function test_can_determine_if_a_set_of_tags_are_being_monitored()
     {
@@ -32,7 +31,6 @@ class MonitoringTest extends IntegrationTest
         dispatch(new MonitorTag('first'));
         $this->assertEquals(['first'], $repository->monitored(['first', 'second']));
     }
-
 
     public function test_can_stop_monitoring_tags()
     {
@@ -42,14 +40,12 @@ class MonitoringTest extends IntegrationTest
         $this->assertEquals([], $repository->monitored(['first', 'second']));
     }
 
-
     public function test_tags_that_are_removed_from_monitoring_are_removed_from_storage()
     {
         dispatch(new MonitorTag('first'));
         dispatch(new StopMonitoringTag('first'));
-        $this->assertNull(Redis::connection('horizon-tags')->get('first'));
+        $this->assertNull(Redis::connection('horizon')->get('first'));
     }
-
 
     public function test_completed_jobs_are_stored_in_database_when_one_of_their_tags_is_being_monitored()
     {
@@ -57,9 +53,8 @@ class MonitoringTest extends IntegrationTest
         $id = Queue::push(new Jobs\BasicJob);
         $this->work();
         $this->assertEquals(1, $this->monitoredJobs('first'));
-        $this->assertEquals(-1, Redis::connection('horizon-jobs')->ttl($id));
+        $this->assertEquals(-1, Redis::connection('horizon')->ttl($id));
     }
-
 
     public function test_completed_jobs_are_removed_from_database_when_their_tag_is_no_longer_monitored()
     {

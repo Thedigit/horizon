@@ -1,12 +1,12 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
 
 use Illuminate\Queue\QueueManager;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Events\Dispatcher;
-use Laravel\Horizon\Connectors\RedisConnector;
+use Vzool\Horizon\Connectors\RedisConnector;
 
 class HorizonServiceProvider extends ServiceProvider
 {
@@ -23,7 +23,6 @@ class HorizonServiceProvider extends ServiceProvider
         $this->registerRoutes();
         $this->registerResources();
         $this->defineAssetPublishing();
-        $this->registerQueueConnectors();
     }
 
     /**
@@ -50,8 +49,9 @@ class HorizonServiceProvider extends ServiceProvider
     protected function registerRoutes()
     {
         Route::group([
-            'prefix' => 'horizon',
-            'namespace' => 'Laravel\Horizon\Http\Controllers'
+            'prefix' => config('horizon.uri', 'horizon'),
+            'namespace' => 'Vzool\Horizon\Http\Controllers',
+            'middleware' => config('horizon.middleware', 'web'),
         ], function () {
             $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         });
@@ -75,15 +75,7 @@ class HorizonServiceProvider extends ServiceProvider
     public function defineAssetPublishing()
     {
         $this->publishes([
-            HORIZON_PATH.'/public/js' => public_path('vendor/horizon/js'),
-        ], 'horizon-assets');
-
-        $this->publishes([
-            HORIZON_PATH.'/public/css' => public_path('vendor/horizon/css'),
-        ], 'horizon-assets');
-
-        $this->publishes([
-            HORIZON_PATH.'/public/img' => public_path('vendor/horizon/img'),
+            HORIZON_PATH.'/public' => public_path('vendor/horizon'),
         ], 'horizon-assets');
     }
 
@@ -116,6 +108,7 @@ class HorizonServiceProvider extends ServiceProvider
         $this->offerPublishing();
         $this->registerServices();
         $this->registerCommands();
+        $this->registerQueueConnectors();
     }
 
     /**
@@ -141,7 +134,7 @@ class HorizonServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/horizon.php' => config_path('horizon.php')
+                __DIR__.'/../config/horizon.php' => config_path('horizon.php'),
             ], 'horizon-config');
         }
     }
@@ -153,7 +146,7 @@ class HorizonServiceProvider extends ServiceProvider
      */
     protected function registerServices()
     {
-        foreach ($this->bindings as $key => $value) {
+        foreach ($this->serviceBindings as $key => $value) {
             is_numeric($key)
                     ? $this->app->singleton($value)
                     : $this->app->singleton($key, $value);
@@ -175,7 +168,6 @@ class HorizonServiceProvider extends ServiceProvider
                 Console\PurgeCommand::class,
                 Console\PauseCommand::class,
                 Console\ContinueCommand::class,
-                Console\SnapshotCommand::class,
                 Console\SupervisorCommand::class,
                 Console\SupervisorsCommand::class,
                 Console\TerminateCommand::class,
@@ -183,5 +175,7 @@ class HorizonServiceProvider extends ServiceProvider
                 Console\WorkCommand::class,
             ]);
         }
+
+        $this->commands([Console\SnapshotCommand::class]);
     }
 }

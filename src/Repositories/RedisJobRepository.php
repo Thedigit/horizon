@@ -1,12 +1,12 @@
 <?php
 
-namespace Laravel\Horizon\Repositories;
+namespace Vzool\Horizon\Repositories;
 
 use Cake\Chronos\Chronos;
 use Illuminate\Support\Arr;
-use Laravel\Horizon\JobPayload;
+use Vzool\Horizon\JobPayload;
 use Illuminate\Support\Collection;
-use Laravel\Horizon\Contracts\JobRepository;
+use Vzool\Horizon\Contracts\JobRepository;
 use Illuminate\Contracts\Redis\Factory as RedisFactory;
 
 class RedisJobRepository implements JobRepository
@@ -14,7 +14,7 @@ class RedisJobRepository implements JobRepository
     /**
      * The Redis connection instance.
      *
-     * @var RedisFactory
+     * @var \Illuminate\Contracts\Redis\Factory
      */
     public $redis;
 
@@ -25,18 +25,34 @@ class RedisJobRepository implements JobRepository
      */
     public $keys = [
         'id', 'connection', 'queue', 'name', 'status', 'payload',
-        'exception', 'failed_at', 'completed_at', 'retried_by', 'reserved_at'
+        'exception', 'failed_at', 'completed_at', 'retried_by', 'reserved_at',
     ];
+
+    /**
+     * The number of minutes until recent jobs should be purged.
+     *
+     * @var int
+     */
+    public $recentJobExpires;
+
+    /**
+     * The number of minutes until failed jobs should be purged.
+     *
+     * @var int
+     */
+    public $failedJobExpires;
 
     /**
      * Create a new repository instance.
      *
-     * @param  RedisFactory
+     * @param  \Illuminate\Contracts\Redis\Factory  $redis
      * @return void
      */
     public function __construct(RedisFactory $redis)
     {
         $this->redis = $redis;
+        $this->recentJobExpires = config('horizon.trim.recent', 60);
+        $this->failedJobExpires = config('horizon.trim.failed', 10080);
     }
 
     /**
@@ -72,7 +88,7 @@ class RedisJobRepository implements JobRepository
     /**
      * Get a chunk of recent jobs.
      *
-     * @param  string  $afterIndex
+     * @param  string|null  $afterIndex
      * @return \Illuminate\Support\Collection
      */
     public function getRecent($afterIndex = null)
@@ -83,7 +99,7 @@ class RedisJobRepository implements JobRepository
     /**
      * Get a chunk of failed jobs.
      *
-     * @param  string  $afterIndex
+     * @param  string|null  $afterIndex
      * @return \Illuminate\Support\Collection
      */
     public function getFailed($afterIndex = null)
@@ -94,7 +110,7 @@ class RedisJobRepository implements JobRepository
     /**
      * Get the count of recent jobs.
      *
-     * @return \Illuminate\Support\Collection
+     * @return int
      */
     public function countRecent()
     {
@@ -104,7 +120,7 @@ class RedisJobRepository implements JobRepository
     /**
      * Get the count of failed jobs.
      *
-     * @return \Illuminate\Support\Collection
+     * @return int
      */
     public function countFailed()
     {
@@ -114,7 +130,7 @@ class RedisJobRepository implements JobRepository
     /**
      * Get the count of the recently failed jobs.
      *
-     * @return \Illuminate\Support\Collection
+     * @return int
      */
     public function countRecentlyFailed()
     {
@@ -130,7 +146,7 @@ class RedisJobRepository implements JobRepository
      */
     protected function getJobsByType($type, $afterIndex)
     {
-        $afterIndex = is_null($afterIndex) ? -1 : $afterIndex;
+        $afterIndex = $afterIndex === null ? -1 : $afterIndex;
 
         return $this->getJobs($this->connection()->zrange(
             $type, $afterIndex + 1, $afterIndex + 50
@@ -151,7 +167,7 @@ class RedisJobRepository implements JobRepository
      * Retrieve the jobs with the given IDs.
      *
      * @param  array  $ids
-     * @param  string  $indexFrom
+     * @param  mixed  $indexFrom
      * @return \Illuminate\Support\Collection
      */
     public function getJobs(array $ids, $indexFrom = 0)
@@ -163,7 +179,9 @@ class RedisJobRepository implements JobRepository
         });
 
         return $this->indexJobs(collect($jobs)->filter(function ($job) {
-            return is_array($job) && ! is_null($job[0]);
+            $job = is_array($job) ? array_values($job) : null;
+
+            return is_array($job) && $job[0] !== null;
         }), $indexFrom);
     }
 
@@ -192,7 +210,7 @@ class RedisJobRepository implements JobRepository
      *
      * @param  string  $connection
      * @param  string  $queue
-     * @param  JobPayload  $payload
+     * @param  \Vzool\Horizon\JobPayload  $payload
      * @return void
      */
     public function pushed($connection, $queue, JobPayload $payload)
@@ -201,19 +219,20 @@ class RedisJobRepository implements JobRepository
             $this->storeJobReferences($pipe, $payload->id());
 
             $pipe->hmset(
-                $payload->id(),
-                'id', $payload->id(),
-                'connection', $connection,
-                'queue', $queue,
-                'name', $payload->decoded['displayName'],
-                'status', 'pending',
-                'payload', $payload->value,
-                'created_at', time(),
-                'updated_at', time()
+                $payload->id(), [
+                    'id' => $payload->id(),
+                    'connection' => $connection,
+                    'queue' => $queue,
+                    'name' => $payload->decoded['displayName'],
+                    'status' => 'pending',
+                    'payload' => $payload->value,
+                    'created_at' => time(),
+                    'updated_at' => time(),
+                ]
             );
 
             $pipe->expireat(
-                $payload->id(), Chronos::now()->addHours(1)->getTimestamp()
+                $payload->id(), Chronos::now()->addMinutes($this->recentJobExpires)->getTimestamp()
             );
         });
     }
@@ -227,7 +246,7 @@ class RedisJobRepository implements JobRepository
      */
     protected function storeJobReferences($pipe, $id)
     {
-        $pipe->zadd('recent_jobs', microtime(true) * -1, $id);
+        $pipe->zadd('recent_jobs', str_replace(',', '.', microtime(true) * -1), $id);
     }
 
     /**
@@ -235,17 +254,18 @@ class RedisJobRepository implements JobRepository
      *
      * @param  string  $connection
      * @param  string  $queue
-     * @param  JobPayload  $payload
+     * @param  \Vzool\Horizon\JobPayload  $payload
      * @return void
      */
     public function reserved($connection, $queue, JobPayload $payload)
     {
         $this->connection()->hmset(
-            $payload->id(),
-            'status', 'reserved',
-            'payload', $payload->value,
-            'updated_at', time(),
-            'reserved_at', time()
+            $payload->id(), [
+                'status' => 'reserved',
+                'payload' => $payload->value,
+                'updated_at' => time(),
+                'reserved_at' => time(),
+            ]
         );
     }
 
@@ -254,14 +274,17 @@ class RedisJobRepository implements JobRepository
      *
      * @param  string  $connection
      * @param  string  $queue
-     * @param  JobPayload  $payload
+     * @param  \Vzool\Horizon\JobPayload  $payload
      * @return void
      */
     public function released($connection, $queue, JobPayload $payload)
     {
         $this->connection()->hmset(
-            $payload->id(), 'status', 'pending',
-            'payload', $payload->value, 'updated_at', time()
+            $payload->id(), [
+                'status' => 'pending',
+                'payload' => $payload->value,
+                'updated_at' => time(),
+            ]
         );
     }
 
@@ -270,21 +293,22 @@ class RedisJobRepository implements JobRepository
      *
      * @param  string  $connection
      * @param  string  $queue
-     * @param  JobPayload  $payload
+     * @param  \Vzool\Horizon\JobPayload  $payload
      * @return void
      */
     public function remember($connection, $queue, JobPayload $payload)
     {
         $this->connection()->pipeline(function ($pipe) use ($connection, $queue, $payload) {
             $pipe->hmset(
-                $payload->id(),
-                'id', $payload->id(),
-                'connection', $connection,
-                'queue', $queue,
-                'name', $payload->decoded['displayName'],
-                'status', 'completed',
-                'payload', $payload->value,
-                'completed_at', time()
+                $payload->id(), [
+                    'id' => $payload->id(),
+                    'connection' => $connection,
+                    'queue' => $queue,
+                    'name' => $payload->decoded['displayName'],
+                    'status' => 'completed',
+                    'payload' => $payload->value,
+                    'completed_at' => time(),
+                ]
             );
 
             $pipe->persist($payload->id());
@@ -296,7 +320,7 @@ class RedisJobRepository implements JobRepository
      *
      * @param  string  $connection
      * @param  string  $queue
-     * @param  Collection  $payloads
+     * @param  \Illuminate\Support\Collection  $payloads
      * @return void
      */
     public function migrated($connection, $queue, Collection $payloads)
@@ -304,8 +328,11 @@ class RedisJobRepository implements JobRepository
         $this->connection()->pipeline(function ($pipe) use ($payloads) {
             foreach ($payloads as $payload) {
                 $pipe->hmset(
-                    $payload->id(), 'status', 'pending',
-                    'payload', $payload->value, 'updated_at', time()
+                    $payload->id(), [
+                        'status' => 'pending',
+                        'payload' => $payload->value,
+                        'updated_at' => time(),
+                    ]
                 );
             }
         });
@@ -314,7 +341,7 @@ class RedisJobRepository implements JobRepository
     /**
      * Handle the storage of a completed job.
      *
-     * @param  JobPayload  $payload
+     * @param  \Vzool\Horizon\JobPayload  $payload
      * @param  bool  $failed
      * @return void
      */
@@ -340,16 +367,16 @@ class RedisJobRepository implements JobRepository
     protected function markJobAsCompleted($pipe, $id, $failed)
     {
         $failed
-            ? $pipe->hmset($id, 'status', 'failed')
-            : $pipe->hmset($id, 'status', 'completed', 'completed_at', time());
+            ? $pipe->hmset($id, ['status' => 'failed'])
+            : $pipe->hmset($id, ['status' => 'completed', 'completed_at' => time()]);
 
-        $pipe->expireat($id, Chronos::now()->addHours(1)->getTimestamp());
+        $pipe->expireat($id, Chronos::now()->addMinutes($this->recentJobExpires)->getTimestamp());
     }
 
     /**
      * Update the retry status of a job's parent.
      *
-     * @param  JobPayload  $payload
+     * @param  \Vzool\Horizon\JobPayload  $payload
      * @param  bool  $failed
      * @return void
      */
@@ -369,15 +396,15 @@ class RedisJobRepository implements JobRepository
     /**
      * Update the retry status of a job in a retry array.
      *
-     * @param  JobPayload  $payload
+     * @param  \Vzool\Horizon\JobPayload  $payload
      * @param  array  $retries
      * @param  bool  $failed
-     * @return void
+     * @return array
      */
     protected function updateRetryStatus(JobPayload $payload, $retries, $failed)
     {
         return collect($retries)->map(function ($retry) use ($payload, $failed) {
-            return $retry['id'] == $payload->id()
+            return $retry['id'] === $payload->id()
                     ? Arr::set($retry, 'status', $failed ? 'failed' : 'completed')
                     : $retry;
         })->all();
@@ -406,7 +433,7 @@ class RedisJobRepository implements JobRepository
     public function trimRecentJobs()
     {
         $this->connection()->pipeline(function ($pipe) {
-            $score = Chronos::now()->subHours(1)->getTimestamp() * -1;
+            $score = Chronos::now()->subMinutes($this->recentJobExpires)->getTimestamp() * -1;
 
             $pipe->zremrangebyscore('recent_jobs', $score, '+inf');
 
@@ -422,7 +449,7 @@ class RedisJobRepository implements JobRepository
     public function trimFailedJobs()
     {
         $this->connection()->zremrangebyscore(
-            'failed_jobs', Chronos::now()->subDays(7)->getTimestamp() * -1, '+inf'
+            'failed_jobs', Chronos::now()->subMinutes($this->failedJobExpires)->getTimestamp() * -1, '+inf'
         );
     }
 
@@ -430,16 +457,15 @@ class RedisJobRepository implements JobRepository
      * Find a failed job by ID.
      *
      * @param  string  $id
-     * @return \StdClass|null
+     * @return \stdClass|null
      */
     public function findFailed($id)
     {
         $attributes = $this->connection()->hmget(
-            $id, ...$this->keys
+            $id, $this->keys
         );
 
-        return is_array($attributes) && ! is_null($attributes[0])
-                    ? (object) array_combine($this->keys, $attributes) : null;
+        return is_array($attributes) && $attributes[0] !== null ? (object) array_combine($this->keys, $attributes) : null;
     }
 
     /**
@@ -448,7 +474,7 @@ class RedisJobRepository implements JobRepository
      * @param  string  $exception
      * @param  string  $connection
      * @param  string  $queue
-     * @param  JobPayload  $payload
+     * @param  \Vzool\Horizon\JobPayload  $payload
      * @return void
      */
     public function failed($exception, $connection, $queue, JobPayload $payload)
@@ -457,19 +483,20 @@ class RedisJobRepository implements JobRepository
             $this->storeFailedJobReferences($pipe, $payload->id());
 
             $pipe->hmset(
-                $payload->id(),
-                'id', $payload->id(),
-                'connection', $connection,
-                'queue', $queue,
-                'name', $payload->decoded['displayName'],
-                'status', 'failed',
-                'payload', $payload->value,
-                'exception', (string) $exception,
-                'failed_at', time()
+                $payload->id(), [
+                    'id' => $payload->id(),
+                    'connection' => $connection,
+                    'queue' => $queue,
+                    'name' => $payload->decoded['displayName'],
+                    'status' => 'failed',
+                    'payload' => $payload->value,
+                    'exception' => (string) $exception,
+                    'failed_at' => time(),
+                ]
             );
 
             $pipe->expireat(
-                $payload->id(), Chronos::now()->addDays(7)->getTimestamp()
+                $payload->id(), Chronos::now()->addMinutes($this->failedJobExpires)->getTimestamp()
             );
         });
     }
@@ -483,7 +510,7 @@ class RedisJobRepository implements JobRepository
      */
     protected function storeFailedJobReferences($pipe, $id)
     {
-        $score = microtime(true) * -1;
+        $score = str_replace(',', '.', microtime(true) * -1);
 
         $pipe->zadd('failed_jobs', $score, $id);
 
@@ -504,10 +531,10 @@ class RedisJobRepository implements JobRepository
         $retries[] = [
             'id' => $retryId,
             'status' => 'pending',
-            'retried_at' => Chronos::now()->getTimestamp()
+            'retried_at' => Chronos::now()->getTimestamp(),
         ];
 
-        $this->connection()->hmset($id, 'retried_by', json_encode($retries));
+        $this->connection()->hmset($id, ['retried_by' => json_encode($retries)]);
     }
 
     /**
@@ -526,10 +553,10 @@ class RedisJobRepository implements JobRepository
     /**
      * Get the Redis connection instance.
      *
-     * @return \Illuminate\Redis\Connetions\Connection
+     * @return \Illuminate\Redis\Connections\Connection
      */
     protected function connection()
     {
-        return $this->redis->connection('horizon-jobs');
+        return $this->redis->connection('horizon');
     }
 }

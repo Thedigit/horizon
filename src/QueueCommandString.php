@@ -1,19 +1,19 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
 
 class QueueCommandString
 {
     /**
      * Get the additional option string for the command.
      *
-     * @param  SupervisorOptions  $options
+     * @param  \Vzool\Horizon\SupervisorOptions  $options
      * @param  bool  $paused
      * @return string
      */
     public static function toOptionsString(SupervisorOptions $options, $paused = false)
     {
-        $string = sprintf('--delay=%s --memory=%s --queue=%s --sleep=%s --timeout=%s --tries=%s',
+        $string = sprintf('--delay=%s --memory=%s --queue="%s" --sleep=%s --timeout=%s --tries=%s',
             $options->delay, $options->memory, $options->queue,
             $options->sleep, $options->timeout, $options->maxTries
         );

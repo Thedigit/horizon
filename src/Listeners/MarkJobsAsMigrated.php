@@ -1,23 +1,23 @@
 <?php
 
-namespace Laravel\Horizon\Listeners;
+namespace Vzool\Horizon\Listeners;
 
-use Laravel\Horizon\Events\JobsMigrated;
-use Laravel\Horizon\Contracts\JobRepository;
+use Vzool\Horizon\Events\JobsMigrated;
+use Vzool\Horizon\Contracts\JobRepository;
 
 class MarkJobsAsMigrated
 {
     /**
      * The job repository implementation.
      *
-     * @var JobRepository
+     * @var \Vzool\Horizon\Contracts\JobRepository
      */
     public $jobs;
 
     /**
      * Create a new listener instance.
      *
-     * @param  JobRepository  $jobs
+     * @param  \Vzool\Horizon\Contracts\JobRepository  $jobs
      * @return void
      */
     public function __construct(JobRepository $jobs)
@@ -28,7 +28,7 @@ class MarkJobsAsMigrated
     /**
      * Handle the event.
      *
-     * @param  JobsMigrated  $event
+     * @param  \Vzool\Horizon\Events\JobsMigrated  $event
      * @return void
      */
     public function handle(JobsMigrated $event)

@@ -1,22 +1,22 @@
 <?php
 
-namespace Laravel\Horizon\Events;
+namespace Vzool\Horizon\Events;
 
-use Laravel\Horizon\SupervisorProcess;
+use Vzool\Horizon\SupervisorProcess;
 
 class SupervisorProcessRestarting
 {
     /**
      * The supervisor process instance.
      *
-     * @var SupervisorProcess
+     * @var \Vzool\Horizon\SupervisorProcess
      */
     public $process;
 
     /**
      * Create a new event instance.
      *
-     * @param  SupervisorProcess  $process
+     * @param  \Vzool\Horizon\SupervisorProcess  $process
      * @return void
      */
     public function __construct(SupervisorProcess $process)

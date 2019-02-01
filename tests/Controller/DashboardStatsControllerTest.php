@@ -1,28 +1,16 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Controller;
+namespace Vzool\Horizon\Tests\Controller;
 
 use Mockery;
-use Laravel\Horizon\Horizon;
-use Laravel\Horizon\WaitTimeCalculator;
-use Laravel\Horizon\Tests\IntegrationTest;
-use Laravel\Horizon\Contracts\JobRepository;
-use Laravel\Horizon\Contracts\MetricsRepository;
-use Laravel\Horizon\Contracts\SupervisorRepository;
-use Laravel\Horizon\Contracts\MasterSupervisorRepository;
+use Vzool\Horizon\WaitTimeCalculator;
+use Vzool\Horizon\Contracts\JobRepository;
+use Vzool\Horizon\Contracts\MetricsRepository;
+use Vzool\Horizon\Contracts\SupervisorRepository;
+use Vzool\Horizon\Contracts\MasterSupervisorRepository;
 
-class DashboardStatsControllerTest extends IntegrationTest
+class DashboardStatsControllerTest extends AbstractControllerTest
 {
-    public function setUp()
-    {
-        parent::setUp();
-
-        Horizon::auth(function () {
-            return true;
-        });
-    }
-
-
     public function test_all_stats_are_correctly_returned()
     {
         // Setup supervisor data...
@@ -38,7 +26,7 @@ class DashboardStatsControllerTest extends IntegrationTest
                 'processes' => [
                     'redis:first' => 10,
                 ],
-            ]
+            ],
         ]);
         $this->app->instance(SupervisorRepository::class, $supervisors);
 
@@ -77,7 +65,6 @@ class DashboardStatsControllerTest extends IntegrationTest
         ]);
     }
 
-
     public function test_paused_status_is_reflected_if_all_master_supervisors_are_paused()
     {
         $masters = Mockery::mock(MasterSupervisorRepository::class);
@@ -87,7 +74,7 @@ class DashboardStatsControllerTest extends IntegrationTest
             ],
             (object) [
                 'status' => 'paused',
-            ]
+            ],
         ]);
         $this->app->instance(MasterSupervisorRepository::class, $masters);
 

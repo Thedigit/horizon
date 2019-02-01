@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
 
 use Closure;
 use Countable;
@@ -47,7 +47,7 @@ class ProcessPool implements Countable
     /**
      * Create a new process pool instance.
      *
-     * @param  SupervisorOptions  $options
+     * @param  \Vzool\Horizon\SupervisorOptions  $options
      * @param  \Closure|null  $output
      * @return void
      */
@@ -131,13 +131,13 @@ class ProcessPool implements Countable
     /**
      * Mark the given worker process for termination.
      *
-     * @param  WorkerProcess  $process
+     * @param  \Vzool\Horizon\WorkerProcess  $process
      * @return void
      */
     public function markForTermination(WorkerProcess $process)
     {
         $this->terminatingProcesses[] = [
-            'process' => $process, 'terminatedAt' => Chronos::now()
+            'process' => $process, 'terminatedAt' => Chronos::now(),
         ];
     }
 
@@ -171,7 +171,7 @@ class ProcessPool implements Countable
     /**
      * Create a new process instance.
      *
-     * @return WorkerProcess
+     * @return \Vzool\Horizon\WorkerProcess
      */
     protected function createProcess()
     {
@@ -191,7 +191,7 @@ class ProcessPool implements Countable
     }
 
     /**
-     * Terminate all curent workers and start fresh ones.
+     * Terminate all current workers and start fresh ones.
      *
      * @return void
      */
@@ -283,7 +283,19 @@ class ProcessPool implements Countable
     }
 
     /**
-     * Get the total active process count, including processees pending termination.
+     * Get all of the current running processes as a collection.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function runningProcesses()
+    {
+        return collect($this->processes)->filter(function ($process) {
+            return $process->process->isRunning();
+        });
+    }
+
+    /**
+     * Get the total active process count, including processes pending termination.
      *
      * @return int
      */

@@ -1,12 +1,12 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Feature;
+namespace Vzool\Horizon\Tests\Feature;
 
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
-use Laravel\Horizon\Tests\IntegrationTest;
-use Laravel\Horizon\Contracts\JobRepository;
-use Laravel\Horizon\Contracts\TagRepository;
+use Vzool\Horizon\Tests\IntegrationTest;
+use Vzool\Horizon\Contracts\JobRepository;
+use Vzool\Horizon\Contracts\TagRepository;
 
 class FailedJobTest extends IntegrationTest
 {
@@ -15,17 +15,16 @@ class FailedJobTest extends IntegrationTest
         $id = Queue::push(new Jobs\FailingJob);
         $this->work();
         $this->assertEquals(1, $this->failedJobs());
-        $this->assertTrue(Redis::connection('horizon-jobs')->ttl($id) > 0);
+        $this->assertGreaterThan(0, Redis::connection('horizon')->ttl($id));
 
         $job = resolve(JobRepository::class)->getJobs([$id])[0];
 
         $this->assertTrue(isset($job->exception));
         $this->assertTrue(isset($job->failed_at));
-        $this->assertEquals('failed', $job->status);
+        $this->assertSame('failed', $job->status);
         $this->assertTrue(is_numeric($job->failed_at));
         $this->assertEquals(Jobs\FailingJob::class, $job->name);
     }
-
 
     public function test_tags_for_failed_jobs_are_stored_in_redis()
     {
@@ -35,13 +34,12 @@ class FailedJobTest extends IntegrationTest
         $this->assertEquals([$id], $ids);
     }
 
-
     public function test_failed_job_tags_have_an_expiration()
     {
-        $id = Queue::push(new Jobs\FailingJob);
+        Queue::push(new Jobs\FailingJob);
         $this->work();
-        $ttl = Redis::connection('horizon-tags')->pttl('failed:first');
+        $ttl = Redis::connection('horizon')->pttl('failed:first');
         $this->assertNotNull($ttl);
-        $this->assertTrue($ttl > 0);
+        $this->assertGreaterThan(0, $ttl);
     }
 }

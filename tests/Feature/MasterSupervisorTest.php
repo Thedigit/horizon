@@ -1,17 +1,20 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Feature;
+namespace Vzool\Horizon\Tests\Feature;
 
 use Mockery;
-use Laravel\Horizon\MasterSupervisor;
+use Vzool\Horizon\PhpBinary;
 use Illuminate\Support\Facades\Redis;
-use Laravel\Horizon\SupervisorProcess;
-use Laravel\Horizon\SupervisorOptions;
-use Laravel\Horizon\WorkerCommandString;
-use Laravel\Horizon\Tests\IntegrationTest;
-use Laravel\Horizon\Contracts\HorizonCommandQueue;
-use Laravel\Horizon\Contracts\MasterSupervisorRepository;
-use Laravel\Horizon\MasterSupervisorCommands\AddSupervisor;
+use Vzool\Horizon\MasterSupervisor;
+use Vzool\Horizon\SupervisorOptions;
+use Vzool\Horizon\SupervisorProcess;
+use Vzool\Horizon\WorkerCommandString;
+use Vzool\Horizon\Tests\IntegrationTest;
+use Vzool\Horizon\Contracts\HorizonCommandQueue;
+use Vzool\Horizon\Contracts\MasterSupervisorRepository;
+use Vzool\Horizon\MasterSupervisorCommands\AddSupervisor;
+use Vzool\Horizon\Tests\Feature\Fixtures\EternalSupervisor;
+use Vzool\Horizon\Tests\Feature\Fixtures\SupervisorProcessWithFakeRestart;
 
 class MasterSupervisorTest extends IntegrationTest
 {
@@ -30,7 +33,6 @@ class MasterSupervisorTest extends IntegrationTest
         MasterSupervisor::$nameResolver = null;
     }
 
-
     public function test_master_process_marks_clean_exits_as_dead_and_removes_them()
     {
         $master = new MasterSupervisor;
@@ -44,9 +46,8 @@ class MasterSupervisorTest extends IntegrationTest
         $master->loop();
 
         $this->assertTrue($supervisorProcess->dead);
-        $this->assertEquals(0, count($master->supervisors));
+        $this->assertCount(0, $master->supervisors);
     }
-
 
     public function test_master_process_marks_duplicates_as_dead_and_removes_them()
     {
@@ -61,9 +62,8 @@ class MasterSupervisorTest extends IntegrationTest
         $master->loop();
 
         $this->assertTrue($supervisorProcess->dead);
-        $this->assertEquals(0, count($master->supervisors));
+        $this->assertCount(0, $master->supervisors);
     }
-
 
     public function test_master_process_restarts_unexpected_exits()
     {
@@ -78,18 +78,17 @@ class MasterSupervisorTest extends IntegrationTest
         $master->loop();
 
         $this->assertTrue($supervisorProcess->dead);
-        $commands = Redis::connection('horizon-command-queue')->lrange(
-            MasterSupervisor::commandQueueFor(MasterSupervisor::name()), 0, -1
+        $commands = Redis::connection('horizon')->lrange(
+            'commands:'.MasterSupervisor::commandQueueFor(MasterSupervisor::name()), 0, -1
         );
 
-        $this->assertEquals(1, count($commands));
+        $this->assertCount(1, $commands);
         $command = (object) json_decode($commands[0], true);
 
-        $this->assertEquals(0, count($master->supervisors));
+        $this->assertCount(0, $master->supervisors);
         $this->assertEquals(AddSupervisor::class, $command->command);
-        $this->assertEquals('default', $command->options['queue']);
+        $this->assertSame('default', $command->options['queue']);
     }
-
 
     public function test_master_process_restarts_processes_that_never_started()
     {
@@ -102,10 +101,9 @@ class MasterSupervisorTest extends IntegrationTest
         $master->loop();
 
         $this->assertFalse($supervisorProcess->dead);
-        $this->assertEquals(1, count($master->supervisors));
+        $this->assertCount(1, $master->supervisors);
         $this->assertTrue($supervisorProcess->wasRestarted);
     }
-
 
     public function test_master_process_starts_unstarted_processes_when_unpaused()
     {
@@ -118,10 +116,9 @@ class MasterSupervisorTest extends IntegrationTest
         $master->loop();
 
         $this->assertFalse($supervisorProcess->dead);
-        $this->assertEquals(1, count($master->supervisors));
+        $this->assertCount(1, $master->supervisors);
         $this->assertTrue($supervisorProcess->wasRestarted);
     }
-
 
     public function test_master_process_loop_processes_pending_commands()
     {
@@ -145,7 +142,6 @@ class MasterSupervisorTest extends IntegrationTest
         $this->assertEquals(['foo' => 'bar'], $command->options);
     }
 
-
     public function test_master_process_information_is_persisted()
     {
         $master = new MasterSupervisor;
@@ -161,18 +157,17 @@ class MasterSupervisorTest extends IntegrationTest
 
         $this->assertNotNull($masterRecord->pid);
         $this->assertEquals([MasterSupervisor::name().':name'], $masterRecord->supervisors);
-        $this->assertEquals('running', $masterRecord->status);
+        $this->assertSame('running', $masterRecord->status);
 
         $master->pause();
         $master->loop();
 
         $masterRecord = resolve(MasterSupervisorRepository::class)->find($master->name);
-        $this->assertEquals('paused', $masterRecord->status);
+        $this->assertSame('paused', $masterRecord->status);
     }
 
-
     /**
-     * @expectedException Exception
+     * @expectedException \Exception
      */
     public function test_master_process_should_not_allow_duplicate_master_process_on_same_machine()
     {
@@ -185,14 +180,12 @@ class MasterSupervisorTest extends IntegrationTest
         $master->monitor();
     }
 
-
     public function test_supervisor_repository_returns_null_if_no_supervisor_exists_with_given_name()
     {
         $repository = resolve(MasterSupervisorRepository::class);
 
         $this->assertNull($repository->find('nothing'));
     }
-
 
     public function test_supervisor_process_terminates_all_workers_and_exits_on_full_termination()
     {
@@ -211,7 +204,6 @@ class MasterSupervisorTest extends IntegrationTest
         $this->assertNull(resolve(MasterSupervisorRepository::class)->find($master->name));
     }
 
-
     public function test_supervisor_continues_termination_if_supervisors_take_too_long()
     {
         $master = new Fakes\MasterSupervisorWithFakeExit;
@@ -228,39 +220,13 @@ class MasterSupervisorTest extends IntegrationTest
         $this->assertTrue($master->exited);
     }
 
-
     protected function options()
     {
         return tap(new SupervisorOptions(MasterSupervisor::name().':name', 'redis'), function ($options) {
+            $phpBinary = PhpBinary::path();
             $options->directory = realpath(__DIR__.'/../');
-            WorkerCommandString::$command = 'exec php worker.php';
+
+            WorkerCommandString::$command = 'exec '.$phpBinary.' worker.php';
         });
-    }
-}
-
-
-class SupervisorProcessWithFakeRestart extends SupervisorProcess
-{
-    public $wasRestarted = false;
-
-    public function restart()
-    {
-        $this->wasRestarted = true;
-    }
-}
-
-
-class EternalSupervisor
-{
-    public $name = 'eternal';
-
-    public function terminate()
-    {
-        //
-    }
-
-    public function isRunning()
-    {
-        return true;
     }
 }

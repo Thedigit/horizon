@@ -1,11 +1,11 @@
 <?php
 
-namespace Laravel\Horizon\Console;
+namespace Vzool\Horizon\Console;
 
 use Illuminate\Console\Command;
-use Laravel\Horizon\MasterSupervisor;
-use Laravel\Horizon\ProvisioningPlan;
-use Laravel\Horizon\Contracts\MasterSupervisorRepository;
+use Vzool\Horizon\MasterSupervisor;
+use Vzool\Horizon\ProvisioningPlan;
+use Vzool\Horizon\Contracts\MasterSupervisorRepository;
 
 class HorizonCommand extends Command
 {
@@ -33,11 +33,11 @@ class HorizonCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
     public function handle()
     {
-        $repository = resolve(MasterSupervisorRepository::class);
+        $repository = app(MasterSupervisorRepository::class);
 
         if ($repository->find(MasterSupervisor::name())) {
             return $this->comment('A master supervisor is already running on this machine.');

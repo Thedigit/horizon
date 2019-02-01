@@ -1,15 +1,12 @@
 <script type="text/ecmascript-6">
-    import axios from 'axios'
-    import Message from '../../components/Messages/Message.vue'
-
     export default {
-        components: {Message},
+        components: {},
 
 
         /**
          * The component's data.
          */
-        data(){
+        data() {
             return {
                 loadingQueues: true,
                 queues: []
@@ -32,7 +29,7 @@
             loadQueues() {
                 this.loadingQueues = true;
 
-                axios.get('/horizon/api/metrics/queues')
+                this.$http.get('/horizon/api/metrics/queues')
                         .then(response => {
                             this.queues = response.data;
 
@@ -44,21 +41,26 @@
 </script>
 
 <template>
-    <message v-if="!queues.length" text="There aren't any queues."/>
+    <div>
+        <loader :yes="loadingQueues"/>
 
-    <table v-else class="table panel-table" cellpadding="0" cellspacing="0">
-        <thead>
-        <tr>
-            <th class="ph2">Queue</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="queue in queues">
-            <td class="ph2">
-                <router-link :to="{ name: 'metrics.detail', params: { type: 'queues', slug: queue }}" class="fw7">{{ queue }}</router-link>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+        <p class="text-center m-0 p-5" v-if="!loadingQueues && !queues.length">
+            There aren't any queues.
+        </p>
+
+        <table v-if="!loadingQueues && queues.length" class="table card-table table-hover">
+            <thead>
+            <tr>
+                <th>Queue</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="queue in queues">
+                <td>
+                    <router-link :to="{ name: 'metrics.detail', params: { type: 'queues', slug: queue }}">{{ queue }}</router-link>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </template>
-

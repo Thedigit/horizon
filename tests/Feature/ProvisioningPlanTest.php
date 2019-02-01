@@ -1,12 +1,12 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Feature;
+namespace Vzool\Horizon\Tests\Feature;
 
-use Laravel\Horizon\MasterSupervisor;
 use Illuminate\Support\Facades\Redis;
-use Laravel\Horizon\ProvisioningPlan;
-use Laravel\Horizon\Tests\IntegrationTest;
-use Laravel\Horizon\MasterSupervisorCommands\AddSupervisor;
+use Vzool\Horizon\MasterSupervisor;
+use Vzool\Horizon\ProvisioningPlan;
+use Vzool\Horizon\Tests\IntegrationTest;
+use Vzool\Horizon\MasterSupervisorCommands\AddSupervisor;
 
 class ProvisioningPlanTest extends IntegrationTest
 {
@@ -25,17 +25,16 @@ class ProvisioningPlanTest extends IntegrationTest
         $plan = new ProvisioningPlan(MasterSupervisor::name(), $plan);
         $plan->deploy('production');
 
-        $commands = Redis::connection('horizon-command-queue')->lrange(
-            MasterSupervisor::commandQueueFor(MasterSupervisor::name()), 0, -1
+        $commands = Redis::connection('horizon')->lrange(
+            'commands:'.MasterSupervisor::commandQueueFor(MasterSupervisor::name()), 0, -1
         );
 
-        $this->assertEquals(1, count($commands));
+        $this->assertCount(1, $commands);
         $command = (object) json_decode($commands[0], true);
         $this->assertEquals(AddSupervisor::class, $command->command);
-        $this->assertEquals('first', $command->options['queue']);
+        $this->assertSame('first', $command->options['queue']);
         $this->assertEquals(20, $command->options['maxProcesses']);
     }
-
 
     public function test_supervisors_are_added_by_wildcard()
     {
@@ -52,17 +51,16 @@ class ProvisioningPlanTest extends IntegrationTest
         $plan = new ProvisioningPlan(MasterSupervisor::name(), $plan);
         $plan->deploy('production');
 
-        $commands = Redis::connection('horizon-command-queue')->lrange(
-            MasterSupervisor::commandQueueFor(MasterSupervisor::name()), 0, -1
+        $commands = Redis::connection('horizon')->lrange(
+            'commands:'.MasterSupervisor::commandQueueFor(MasterSupervisor::name()), 0, -1
         );
 
-        $this->assertEquals(1, count($commands));
+        $this->assertCount(1, $commands);
         $command = (object) json_decode($commands[0], true);
         $this->assertEquals(AddSupervisor::class, $command->command);
-        $this->assertEquals('first', $command->options['queue']);
+        $this->assertSame('first', $command->options['queue']);
         $this->assertEquals(20, $command->options['maxProcesses']);
     }
-
 
     public function test_plan_is_converted_into_array_of_supervisor_options()
     {
@@ -93,8 +91,8 @@ class ProvisioningPlanTest extends IntegrationTest
         $results = (new ProvisioningPlan(MasterSupervisor::name(), $plan))->toSupervisorOptions();
 
         $this->assertEquals(MasterSupervisor::name().':supervisor-1', $results['production']['supervisor-1']->name);
-        $this->assertEquals('redis', $results['production']['supervisor-1']->connection);
-        $this->assertEquals('default', $results['production']['supervisor-1']->queue);
+        $this->assertSame('redis', $results['production']['supervisor-1']->connection);
+        $this->assertSame('default', $results['production']['supervisor-1']->queue);
         $this->assertTrue($results['production']['supervisor-1']->balance);
         $this->assertTrue($results['production']['supervisor-1']->autoScale);
 

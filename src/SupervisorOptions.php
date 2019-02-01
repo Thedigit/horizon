@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
 
 use Illuminate\Queue\WorkerOptions;
 
@@ -61,7 +61,7 @@ class SupervisorOptions extends WorkerOptions
      * @param  string  $name
      * @param  string  $connection
      * @param  string  $queue
-     * @param  bool  $balance
+     * @param  string  $balance
      * @param  int  $delay
      * @param  int  $maxProcesses
      * @param  int  $minProcesses
@@ -89,7 +89,7 @@ class SupervisorOptions extends WorkerOptions
      * Create a fresh options instance with the given queue.
      *
      * @param  string  $queue
-     * @return SupervisorOptions
+     * @return static
      */
     public function withQueue($queue)
     {
@@ -115,7 +115,7 @@ class SupervisorOptions extends WorkerOptions
      */
     public function autoScaling()
     {
-        return $this->balance == 'auto';
+        return $this->balance === 'auto';
     }
 
     /**

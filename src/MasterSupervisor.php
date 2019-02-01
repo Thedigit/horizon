@@ -1,21 +1,20 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
 
 use Closure;
 use Exception;
 use Throwable;
 use Cake\Chronos\Chronos;
 use Illuminate\Support\Str;
-use Symfony\Component\Process\Process;
-use Laravel\Horizon\Contracts\Pausable;
-use Laravel\Horizon\Contracts\Terminable;
-use Laravel\Horizon\Contracts\Restartable;
+use Vzool\Horizon\Contracts\Pausable;
+use Vzool\Horizon\Contracts\Terminable;
+use Vzool\Horizon\Contracts\Restartable;
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Laravel\Horizon\Events\MasterSupervisorLooped;
-use Laravel\Horizon\Contracts\HorizonCommandQueue;
-use Laravel\Horizon\Contracts\SupervisorRepository;
-use Laravel\Horizon\Contracts\MasterSupervisorRepository;
+use Vzool\Horizon\Contracts\HorizonCommandQueue;
+use Vzool\Horizon\Events\MasterSupervisorLooped;
+use Vzool\Horizon\Contracts\SupervisorRepository;
+use Vzool\Horizon\Contracts\MasterSupervisorRepository;
 use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 class MasterSupervisor implements Pausable, Restartable, Terminable
@@ -51,7 +50,7 @@ class MasterSupervisor implements Pausable, Restartable, Terminable
     /**
      * The callback to use to resolve master supervisor names.
      *
-     * @var Closure|null
+     * @var \Closure|null
      */
     public static $nameResolver;
 
@@ -69,7 +68,7 @@ class MasterSupervisor implements Pausable, Restartable, Terminable
             //
         };
 
-        resolve(HorizonCommandQueue::class)->flush($this->commandQueue());
+        app(HorizonCommandQueue::class)->flush($this->commandQueue());
     }
 
     /**
@@ -103,7 +102,7 @@ class MasterSupervisor implements Pausable, Restartable, Terminable
     /**
      * Use the given callback to resolve master supervisor names.
      *
-     * @param  Closure  $callback
+     * @param  \Closure  $callback
      * @return void
      */
     public static function determineNameUsing(Closure $callback)
@@ -160,15 +159,15 @@ class MasterSupervisor implements Pausable, Restartable, Terminable
         // First we will terminate all child supervisors so they will gracefully scale
         // down to zero. We'll also grab the longest expiration times of any of the
         // active supervisors so we know the maximum amount of time to wait here.
+        $longest = app(SupervisorRepository::class)
+            ->longestActiveTimeout();
+        
         $this->supervisors->each->terminate();
-
-        $longest = resolve(SupervisorRepository::class)
-                    ->longestActiveTimeout();
 
         // We will go ahead and remove this master supervisor's record from storage so
         // another master supervisor could get started in its place without waiting
         // for it to really finish terminating all of its underlying supervisors.
-        resolve(MasterSupervisorRepository::class)
+        app(MasterSupervisorRepository::class)
                     ->forget($this->name);
 
         $startedTerminating = Chronos::now();
@@ -212,11 +211,12 @@ class MasterSupervisor implements Pausable, Restartable, Terminable
      * Ensure that this is the only master supervisor running for this machine.
      *
      * @return void
+     * @throws \Exception
      */
     public function ensureNoOtherMasterSupervisors()
     {
-        if (! is_null(resolve(MasterSupervisorRepository::class)->find($this->name))) {
-            throw new Exception("A master supervisor is already running on this machine.");
+        if (app(MasterSupervisorRepository::class)->find($this->name) !== null) {
+            throw new Exception('A master supervisor is already running on this machine.');
         }
     }
 
@@ -238,9 +238,9 @@ class MasterSupervisor implements Pausable, Restartable, Terminable
 
             event(new MasterSupervisorLooped($this));
         } catch (Exception $e) {
-            resolve(ExceptionHandler::class)->report($e);
+            app(ExceptionHandler::class)->report($e);
         } catch (Throwable $e) {
-            resolve(ExceptionHandler::class)->report(new FatalThrowableError($e));
+            app(ExceptionHandler::class)->report(new FatalThrowableError($e));
         }
     }
 
@@ -251,8 +251,8 @@ class MasterSupervisor implements Pausable, Restartable, Terminable
      */
     protected function processPendingCommands()
     {
-        foreach (resolve(HorizonCommandQueue::class)->pending($this->commandQueue()) as $command) {
-            resolve($command->command)->process($this, $command->options);
+        foreach (app(HorizonCommandQueue::class)->pending($this->commandQueue()) as $command) {
+            app($command->command)->process($this, $command->options);
         }
     }
 
@@ -275,7 +275,7 @@ class MasterSupervisor implements Pausable, Restartable, Terminable
      */
     public function persist()
     {
-        resolve(MasterSupervisorRepository::class)->update($this);
+        app(MasterSupervisorRepository::class)->update($this);
     }
 
     /**

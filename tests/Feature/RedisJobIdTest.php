@@ -1,19 +1,18 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Feature;
+namespace Vzool\Horizon\Tests\Feature;
 
-use Laravel\Horizon\JobId;
-use Laravel\Horizon\Tests\IntegrationTest;
+use Vzool\Horizon\JobId;
+use Vzool\Horizon\Tests\IntegrationTest;
 
 class JobIdTest extends IntegrationTest
 {
     public function test_ids_can_be_generated()
     {
-        $this->assertEquals('1', JobId::generate());
-        $this->assertEquals('2', JobId::generate());
-        $this->assertEquals('3', JobId::generate());
+        $this->assertSame('1', JobId::generate());
+        $this->assertSame('2', JobId::generate());
+        $this->assertSame('3', JobId::generate());
     }
-
 
     public function test_custom_ids_can_be_generated()
     {
@@ -21,7 +20,7 @@ class JobIdTest extends IntegrationTest
             return 'foo';
         });
 
-        $this->assertEquals('foo', JobId::generate());
+        $this->assertSame('foo', JobId::generate());
 
         JobId::generateUsing(null);
     }

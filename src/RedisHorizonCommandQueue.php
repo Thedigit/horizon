@@ -1,8 +1,8 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
 
-use Laravel\Horizon\Contracts\HorizonCommandQueue;
+use Vzool\Horizon\Contracts\HorizonCommandQueue;
 use Illuminate\Contracts\Redis\Factory as RedisFactory;
 
 class RedisHorizonCommandQueue implements HorizonCommandQueue
@@ -10,14 +10,14 @@ class RedisHorizonCommandQueue implements HorizonCommandQueue
     /**
      * The Redis connection instance.
      *
-     * @var RedisFactory
+     * @var \Illuminate\Contracts\Redis\Factory
      */
     public $redis;
 
     /**
      * Create a new command queue instance.
      *
-     * @param  RedisFactory  $redis
+     * @param  \Illuminate\Contracts\Redis\Factory  $redis
      * @return void
      */
     public function __construct(RedisFactory $redis)
@@ -34,7 +34,7 @@ class RedisHorizonCommandQueue implements HorizonCommandQueue
      */
     public function push($name, $command, array $options = [])
     {
-        $this->connection()->rpush($name, json_encode([
+        $this->connection()->rpush('commands:'.$name, json_encode([
             'command' => $command,
             'options' => $options,
         ]));
@@ -48,16 +48,16 @@ class RedisHorizonCommandQueue implements HorizonCommandQueue
      */
     public function pending($name)
     {
-        $length = $this->connection()->llen($name);
+        $length = $this->connection()->llen('commands:'.$name);
 
         if ($length < 1) {
             return [];
         }
 
         $results = $this->connection()->pipeline(function ($pipe) use ($name, $length) {
-            $pipe->lrange($name, 0, $length - 1);
+            $pipe->lrange('commands:'.$name, 0, $length - 1);
 
-            $pipe->ltrim($name, $length, -1);
+            $pipe->ltrim('commands:'.$name, $length, -1);
         });
 
         return collect($results[0])->map(function ($result) {
@@ -73,16 +73,16 @@ class RedisHorizonCommandQueue implements HorizonCommandQueue
      */
     public function flush($name)
     {
-        $this->connection()->del($name);
+        $this->connection()->del('commands:'.$name);
     }
 
     /**
      * Get the Redis connection instance.
      *
-     * @return \Illuminate\Redis\Connetions\Connection
+     * @return \Illuminate\Redis\Connections\Connection
      */
     protected function connection()
     {
-        return $this->redis->connection('horizon-command-queue');
+        return $this->redis->connection('horizon');
     }
 }

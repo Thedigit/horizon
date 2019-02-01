@@ -1,10 +1,10 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Feature;
+namespace Vzool\Horizon\Tests\Feature;
 
-use Laravel\Horizon\Horizon;
-use Laravel\Horizon\Tests\IntegrationTest;
-use Laravel\Horizon\Http\Middleware\Authenticate;
+use Vzool\Horizon\Horizon;
+use Vzool\Horizon\Tests\IntegrationTest;
+use Vzool\Horizon\Http\Middleware\Authenticate;
 
 class AuthTest extends IntegrationTest
 {
@@ -20,7 +20,6 @@ class AuthTest extends IntegrationTest
         $this->assertFalse(Horizon::check('adam'));
         $this->assertFalse(Horizon::check(null));
     }
-
 
     public function test_authentication_middleware_can_pass()
     {
@@ -38,12 +37,11 @@ class AuthTest extends IntegrationTest
             }
         );
 
-        $this->assertEquals('response', $response);
+        $this->assertSame('response', $response);
     }
 
-
     /**
-     * @expectedException Symfony\Component\HttpKernel\Exception\HttpException
+     * @expectedException \Symfony\Component\HttpKernel\Exception\HttpException
      */
     public function test_authentication_middleware_responds_with_403_on_failure()
     {
@@ -53,7 +51,7 @@ class AuthTest extends IntegrationTest
 
         $middleware = new Authenticate;
 
-        $response = $middleware->handle(
+        $middleware->handle(
             new class {
             },
             function ($value) {

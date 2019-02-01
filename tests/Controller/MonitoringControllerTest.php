@@ -1,26 +1,14 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Controller;
+namespace Vzool\Horizon\Tests\Controller;
 
 use Mockery;
-use Laravel\Horizon\Horizon;
-use Laravel\Horizon\JobPayload;
-use Laravel\Horizon\Tests\IntegrationTest;
-use Laravel\Horizon\Contracts\JobRepository;
-use Laravel\Horizon\Contracts\TagRepository;
+use Vzool\Horizon\JobPayload;
+use Vzool\Horizon\Contracts\JobRepository;
+use Vzool\Horizon\Contracts\TagRepository;
 
-class MonitoringControllerTest extends IntegrationTest
+class MonitoringControllerTest extends AbstractControllerTest
 {
-    public function setUp()
-    {
-        parent::setUp();
-
-        Horizon::auth(function () {
-            return true;
-        });
-    }
-
-
     public function test_monitored_tags_and_job_counts_are_returned()
     {
         $tags = Mockery::mock(TagRepository::class);
@@ -42,7 +30,6 @@ class MonitoringControllerTest extends IntegrationTest
         ]);
     }
 
-
     public function test_monitored_jobs_can_be_paginated_by_tag()
     {
         $tags = resolve(TagRepository::class);
@@ -63,7 +50,7 @@ class MonitoringControllerTest extends IntegrationTest
 
         $results = $response->original['jobs'];
 
-        $this->assertEquals(25, count($results));
+        $this->assertCount(25, $results);
         $this->assertEquals(49, $results[0]->id);
         $this->assertEquals(25, $results[24]->id);
 
@@ -73,20 +60,15 @@ class MonitoringControllerTest extends IntegrationTest
 
         $results = $response->original['jobs'];
 
-        $this->assertEquals(25, count($results));
+        $this->assertCount(25, $results);
         $this->assertEquals(24, $results[0]->id);
         $this->assertEquals(0, $results[24]->id);
         $this->assertEquals(25, $results[0]->index);
         $this->assertEquals(49, $results[24]->index);
     }
 
-
     public function test_can_paginate_where_jobs_dont_exist()
     {
-        Horizon::auth(function () {
-            return true;
-        });
-
         $tags = resolve(TagRepository::class);
 
         for ($i = 0; $i < 50; $i++) {
@@ -96,31 +78,21 @@ class MonitoringControllerTest extends IntegrationTest
         $response = $this->actingAs(new Fakes\User)
                     ->get('/horizon/api/monitoring/tag?starting_at=1000');
 
-        $this->assertEquals(0, count($response->original['jobs']));
+        $this->assertCount(0, $response->original['jobs']);
     }
-
 
     public function test_can_start_monitoring_tags()
     {
-        Horizon::auth(function () {
-            return true;
-        });
-
         $tags = resolve(TagRepository::class);
 
-        $response = $this->actingAs(new Fakes\User)
-                    ->post('/horizon/api/monitoring', ['tag' => 'taylor']);
+        $this->actingAs(new Fakes\User)
+             ->post('/horizon/api/monitoring', ['tag' => 'taylor']);
 
         $this->assertEquals(['taylor'], $tags->monitoring());
     }
 
-
     public function test_can_stop_monitoring_tags()
     {
-        Horizon::auth(function () {
-            return true;
-        });
-
         $tags = resolve(TagRepository::class);
         $jobs = resolve(JobRepository::class);
 
@@ -133,8 +105,8 @@ class MonitoringControllerTest extends IntegrationTest
             ));
         }
 
-        $response = $this->actingAs(new Fakes\User)
-                    ->delete('/horizon/api/monitoring/tag');
+        $this->actingAs(new Fakes\User)
+             ->delete('/horizon/api/monitoring/tag');
 
         // Ensure monitored jobs were deleted...
         $response = $this->actingAs(new Fakes\User)
@@ -142,6 +114,6 @@ class MonitoringControllerTest extends IntegrationTest
 
         $results = $response->original['jobs'];
 
-        $this->assertEquals(0, count($results));
+        $this->assertCount(0, $results);
     }
 }

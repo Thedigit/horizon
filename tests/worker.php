@@ -4,10 +4,10 @@ require __DIR__.'/../vendor/autoload.php';
 
 use Illuminate\Queue\Worker;
 use Illuminate\Queue\WorkerOptions;
-use Orchestra\Testbench\Traits\ApplicationTrait;
+use Orchestra\Testbench\Traits\CreatesApplication;
 
 $appLoader = new class {
-    use ApplicationTrait;
+    use CreatesApplication;
 
     /**
      * Define environment setup.
@@ -24,11 +24,11 @@ $appLoader = new class {
 
 // Configure the application...
 $app = $appLoader->createApplication();
-$app->register(Laravel\Horizon\HorizonServiceProvider::class);
+$app->register(Vzool\Horizon\HorizonServiceProvider::class);
 $app['config']->set('queue.default', 'redis');
 
 // Create the worker...
-$worker = resolve(Worker::class);
+$worker = app(Worker::class);
 
 // Pause the worker if needed...
 if (in_array('--paused', $_SERVER['argv'])) {

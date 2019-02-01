@@ -1,23 +1,23 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
 
-use Laravel\Horizon\Contracts\SupervisorRepository;
-use Laravel\Horizon\Contracts\MasterSupervisorRepository;
+use Vzool\Horizon\Contracts\SupervisorRepository;
+use Vzool\Horizon\Contracts\MasterSupervisorRepository;
 
 class ProcessInspector
 {
     /**
      * The command executor.
      *
-     * @var \Laravel\Horizon\Exec
+     * @var \Vzool\Horizon\Exec
      */
     public $exec;
 
     /**
      * Create a new process inspector instance.
      *
-     * @param  \Laravel\Horizon\Exec  $exec
+     * @param  \Vzool\Horizon\Exec  $exec
      * @return void
      */
     public function __construct(Exec $exec)
@@ -33,8 +33,8 @@ class ProcessInspector
     public function current()
     {
         return array_diff(
-            $this->exec->run("pgrep -f horizon"),
-            $this->exec->run("pgrep -f horizon:purge")
+            $this->exec->run('pgrep -f horizon'),
+            $this->exec->run('pgrep -f horizon:purge')
         );
     }
 
@@ -55,7 +55,7 @@ class ProcessInspector
      */
     public function monitoring()
     {
-        return collect(resolve(SupervisorRepository::class)->all())
+        return collect(app(SupervisorRepository::class)->all())
             ->pluck('pid')
             ->pipe(function ($processes) {
                 $processes->each(function ($process) use (&$processes) {
@@ -65,7 +65,7 @@ class ProcessInspector
                 return $processes;
             })
             ->merge(
-                array_pluck(resolve(MasterSupervisorRepository::class)->all(), 'pid')
+                array_pluck(app(MasterSupervisorRepository::class)->all(), 'pid')
             )->all();
     }
 }

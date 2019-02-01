@@ -1,17 +1,17 @@
 <?php
 
-namespace Laravel\Horizon\Listeners;
+namespace Vzool\Horizon\Listeners;
 
 use Cake\Chronos\Chronos;
-use Laravel\Horizon\Contracts\JobRepository;
-use Laravel\Horizon\Events\MasterSupervisorLooped;
+use Vzool\Horizon\Contracts\JobRepository;
+use Vzool\Horizon\Events\MasterSupervisorLooped;
 
 class TrimRecentJobs
 {
     /**
      * The last time the recent jobs were trimmed.
      *
-     * @var Chronos
+     * @var \Cake\Chronos\Chronos
      */
     public $lastTrimmed;
 
@@ -25,17 +25,21 @@ class TrimRecentJobs
     /**
      * Handle the event.
      *
-     * @param  MasterSupervisorLooped  $event
+     * @param  \Vzool\Horizon\Events\MasterSupervisorLooped  $event
      * @return void
      */
     public function handle(MasterSupervisorLooped $event)
     {
         if (! isset($this->lastTrimmed)) {
+            $this->frequency = max(1, intdiv(
+                config('horizon.trim.recent', 60), 12
+            ));
+
             $this->lastTrimmed = Chronos::now()->subMinutes($this->frequency + 1);
         }
 
         if ($this->lastTrimmed->lte(Chronos::now()->subMinutes($this->frequency))) {
-            resolve(JobRepository::class)->trimRecentJobs();
+            app(JobRepository::class)->trimRecentJobs();
 
             $this->lastTrimmed = Chronos::now();
         }

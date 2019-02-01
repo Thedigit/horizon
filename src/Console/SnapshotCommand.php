@@ -1,10 +1,10 @@
 <?php
 
-namespace Laravel\Horizon\Console;
+namespace Vzool\Horizon\Console;
 
-use Laravel\Horizon\Lock;
+use Vzool\Horizon\Lock;
 use Illuminate\Console\Command;
-use Laravel\Horizon\Contracts\MetricsRepository;
+use Vzool\Horizon\Contracts\MetricsRepository;
 
 class SnapshotCommand extends Command
 {
@@ -25,12 +25,12 @@ class SnapshotCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
     public function handle()
     {
-        if (resolve(Lock::class)->get('metrics:snapshot', 300)) {
-            resolve(MetricsRepository::class)->snapshot();
+        if (app(Lock::class)->get('metrics:snapshot', 300)) {
+            app(MetricsRepository::class)->snapshot();
 
             $this->info('Metrics snapshot stored successfully.');
         }

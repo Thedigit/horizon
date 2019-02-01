@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Horizon\Console;
+namespace Vzool\Horizon\Console;
 
 use Illuminate\Console\Command;
 
@@ -23,7 +23,7 @@ class AssetsCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
     public function handle()
     {

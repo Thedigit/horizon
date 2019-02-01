@@ -1,11 +1,11 @@
 <?php
 
-namespace Laravel\Horizon\Console;
+namespace Vzool\Horizon\Console;
 
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
-use Laravel\Horizon\MasterSupervisor;
-use Laravel\Horizon\Contracts\MasterSupervisorRepository;
+use Vzool\Horizon\MasterSupervisor;
+use Vzool\Horizon\Contracts\MasterSupervisorRepository;
 
 class ContinueCommand extends Command
 {
@@ -21,16 +21,16 @@ class ContinueCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Instruct the master supevisor to continue processing jobs';
+    protected $description = 'Instruct the master supervisor to continue processing jobs';
 
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
     public function handle()
     {
-        $masters = resolve(MasterSupervisorRepository::class)->all();
+        $masters = app(MasterSupervisorRepository::class)->all();
 
         $masters = collect($masters)->filter(function ($master) {
             return Str::startsWith($master->name, MasterSupervisor::basename());

@@ -1,12 +1,12 @@
 <?php
 
-namespace Laravel\Horizon\Repositories;
+namespace Vzool\Horizon\Repositories;
 
 use Cake\Chronos\Chronos;
-use Laravel\Horizon\Lock;
-use Laravel\Horizon\LuaScripts;
-use Laravel\Horizon\WaitTimeCalculator;
-use Laravel\Horizon\Contracts\MetricsRepository;
+use Vzool\Horizon\Lock;
+use Vzool\Horizon\LuaScripts;
+use Vzool\Horizon\WaitTimeCalculator;
+use Vzool\Horizon\Contracts\MetricsRepository;
 use Illuminate\Contracts\Redis\Factory as RedisFactory;
 
 class RedisMetricsRepository implements MetricsRepository
@@ -14,14 +14,14 @@ class RedisMetricsRepository implements MetricsRepository
     /**
      * The Redis connection instance.
      *
-     * @var RedisFactory
+     * @var \Illuminate\Contracts\Redis\Factory
      */
     public $redis;
 
     /**
      * Create a new repository instance.
      *
-     * @param  RedisFactory
+     * @param  \Illuminate\Contracts\Redis\Factory  $redis
      * @return void
      */
     public function __construct(RedisFactory $redis)
@@ -36,10 +36,10 @@ class RedisMetricsRepository implements MetricsRepository
      */
     public function measuredJobs()
     {
-        $classes = (array) $this->connection()->keys('job:*');
+        $classes = (array) $this->connection()->smembers('measured_jobs');
 
         return collect($classes)->map(function ($class) {
-            return substr($class, 4);
+            return preg_match('/job:(.*)$/', $class, $matches) ? $matches[1] : $class;
         })->all();
     }
 
@@ -50,17 +50,17 @@ class RedisMetricsRepository implements MetricsRepository
      */
     public function measuredQueues()
     {
-        $queues = (array) $this->connection()->keys('queue:*');
+        $queues = (array) $this->connection()->smembers('measured_queues');
 
         return collect($queues)->map(function ($class) {
-            return substr($class, 6);
+            return preg_match('/queue:(.*)$/', $class, $matches) ? $matches[1] : $class;
         })->all();
     }
 
     /**
      * Get the jobs processed per minute since the last snapshot.
      *
-     * @return int
+     * @return float
      */
     public function jobsProcessedPerMinute()
     {
@@ -153,7 +153,7 @@ class RedisMetricsRepository implements MetricsRepository
     public function queueWithMaximumRuntime()
     {
         return collect($this->measuredQueues())->sortBy(function ($queue) {
-            if ($snapshots = $this->connection()->zrange('snapshot:queue:'.$queue, - 1, 1)) {
+            if ($snapshots = $this->connection()->zrange('snapshot:queue:'.$queue, -1, 1)) {
                 return json_decode($snapshots[0])->runtime;
             }
         })->last();
@@ -167,7 +167,7 @@ class RedisMetricsRepository implements MetricsRepository
     public function queueWithMaximumThroughput()
     {
         return collect($this->measuredQueues())->sortBy(function ($queue) {
-            if ($snapshots = $this->connection()->zrange('snapshot:queue:'.$queue, - 1, 1)) {
+            if ($snapshots = $this->connection()->zrange('snapshot:queue:'.$queue, -1, 1)) {
                 return json_decode($snapshots[0])->throughput;
             }
         })->last();
@@ -182,7 +182,9 @@ class RedisMetricsRepository implements MetricsRepository
      */
     public function incrementJob($job, $runtime)
     {
-        return $this->increment('job:'.$job, $runtime);
+        $this->connection()->eval(LuaScripts::updateMetrics(), 2,
+            'job:'.$job, 'measured_jobs', str_replace(',', '.', $runtime)
+        );
     }
 
     /**
@@ -194,23 +196,9 @@ class RedisMetricsRepository implements MetricsRepository
      */
     public function incrementQueue($queue, $runtime)
     {
-        return $this->increment('queue:'.$queue, $runtime);
-    }
-
-    /**
-     * Increment the metrics information for a key.
-     *
-     * @param  string  $key
-     * @param  float  $runtime
-     * @return void
-     */
-    protected function increment($key, $runtime)
-    {
-        $this->connection()->pipeline(function ($pipe) use ($key, $runtime) {
-            $pipe->hsetnx($key, 'throughput', 0);
-
-            $pipe->eval(LuaScripts::updateJobMetrics(), 1, $key, $runtime);
-        });
+        $this->connection()->eval(LuaScripts::updateMetrics(), 2,
+            'queue:'.$queue, 'measured_queues', str_replace(',', '.', $runtime)
+        );
     }
 
     /**
@@ -243,11 +231,10 @@ class RedisMetricsRepository implements MetricsRepository
      */
     protected function snapshotsFor($key)
     {
-        $snapshots = array_flip($this->connection()->zrange('snapshot:'.$key, 0, -1, 'withscores'));
-
-        return collect($snapshots)->map(function ($snapshot, $time) {
-            return (object) json_decode($snapshot, true);
-        })->values()->all();
+        return collect($this->connection()->zrange('snapshot:'.$key, 0, - 1))
+            ->map(function ($snapshot) {
+                return (object) json_decode($snapshot, true);
+            })->values()->all();
     }
 
     /**
@@ -305,7 +292,7 @@ class RedisMetricsRepository implements MetricsRepository
             'snapshot:'.$key, $time = Chronos::now()->getTimestamp(), json_encode([
                 'throughput' => $data['throughput'],
                 'runtime' => $data['runtime'],
-                'wait' => resolve(WaitTimeCalculator::class)->calculateFor($queue),
+                'wait' => app(WaitTimeCalculator::class)->calculateFor($queue),
                 'time' => $time,
             ])
         );
@@ -324,21 +311,23 @@ class RedisMetricsRepository implements MetricsRepository
     protected function baseSnapshotData($key)
     {
         $responses = $this->connection()->transaction(function ($trans) use ($key) {
-            $trans->hmget($key, 'throughput', 'runtime');
+            $trans->hmget($key, ['throughput', 'runtime']);
 
             $trans->del($key);
         });
 
+        $snapshot = array_values($responses[0]);
+
         return [
-            'throughput' => $responses[0][0],
-            'runtime' => $responses[0][1],
+            'throughput' => $snapshot[0],
+            'runtime' => $snapshot[1],
         ];
     }
 
     /**
      * Get the number of minutes passed since the last snapshot.
      *
-     * @return int
+     * @return float
      */
     protected function minutesSinceLastSnapshot()
     {
@@ -363,13 +352,13 @@ class RedisMetricsRepository implements MetricsRepository
     }
 
     /**
-     * Attempt to aquire a lock to monitor the queue wait times.
+     * Attempt to acquire a lock to monitor the queue wait times.
      *
      * @return bool
      */
     public function acquireWaitTimeMonitorLock()
     {
-        return resolve(Lock::class)->get('monitor:time-to-clear');
+        return app(Lock::class)->get('monitor:time-to-clear');
     }
 
     /**
@@ -386,10 +375,10 @@ class RedisMetricsRepository implements MetricsRepository
     /**
      * Get the Redis connection instance.
      *
-     * @return \Illuminate\Redis\Connetions\Connection
+     * @return \Illuminate\Redis\Connections\Connection
      */
     public function connection()
     {
-        return $this->redis->connection('horizon-metrics');
+        return $this->redis->connection('horizon');
     }
 }

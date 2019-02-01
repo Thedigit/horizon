@@ -1,15 +1,12 @@
 <script type="text/ecmascript-6">
-    import axios from 'axios'
-    import Message from '../../components/Messages/Message.vue'
-
     export default {
-        components: {Message},
+        components: {},
 
 
         /**
          * The component's data.
          */
-        data(){
+        data() {
             return {
                 loadingJobs: true,
                 jobs: []
@@ -32,33 +29,38 @@
             loadJobs() {
                 this.loadingJobs = true;
 
-                axios.get('/horizon/api/metrics/jobs')
-                        .then(response => {
-                            this.jobs = response.data;
+                this.$http.get('/horizon/api/metrics/jobs')
+                    .then(response => {
+                        this.jobs = response.data;
 
-                            this.loadingJobs = false;
-                        });
+                        this.loadingJobs = false;
+                    });
             }
         }
     }
 </script>
 
 <template>
-    <message v-if="!jobs.length" text="There aren't any jobs."/>
+    <div class="table-responsive">
+        <loader :yes="loadingJobs"/>
 
-    <table v-else class="table panel-table" cellpadding="0" cellspacing="0">
-        <thead>
-        <tr>
-            <th class="ph2">Job</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="job in jobs">
-            <td class="ph2">
-                <router-link :to="{ name: 'metrics.detail', params: { type: 'jobs', slug: job }}" class="fw7">{{ job }}</router-link>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+        <p class="text-center m-0 p-5" v-if="!loadingJobs && !jobs.length">
+            There aren't any jobs.
+        </p>
+
+        <table v-if="!loadingJobs && jobs.length" class="table card-table table-hover">
+            <thead>
+            <tr>
+                <th>Job</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="job in jobs">
+                <td>
+                    <router-link :to="{ name: 'metrics.detail', params: { type: 'jobs', slug: job }}">{{ job }}</router-link>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </template>
-

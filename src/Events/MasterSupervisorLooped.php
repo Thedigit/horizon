@@ -1,22 +1,22 @@
 <?php
 
-namespace Laravel\Horizon\Events;
+namespace Vzool\Horizon\Events;
 
-use Laravel\Horizon\MasterSupervisor;
+use Vzool\Horizon\MasterSupervisor;
 
 class MasterSupervisorLooped
 {
     /**
      * The master supervisor instance.
      *
-     * @var MasterSupervisor
+     * @var \Vzool\Horizon\MasterSupervisor
      */
     public $master;
 
     /**
      * Create a new event instance.
      *
-     * @param  Supervisor  $master
+     * @param  \Vzool\Horizon\MasterSupervisor  $master
      * @return void
      */
     public function __construct(MasterSupervisor $master)

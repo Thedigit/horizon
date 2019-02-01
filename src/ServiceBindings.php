@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
 
 trait ServiceBindings
 {
@@ -9,7 +9,7 @@ trait ServiceBindings
      *
      * @var array
      */
-    protected $bindings = [
+    public $serviceBindings = [
         // General services...
         AutoScaler::class,
         Contracts\HorizonCommandQueue::class => RedisHorizonCommandQueue::class,

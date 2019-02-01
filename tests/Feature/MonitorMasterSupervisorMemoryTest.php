@@ -1,12 +1,12 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Feature;
+namespace Vzool\Horizon\Tests\Feature;
 
 use Mockery;
-use Laravel\Horizon\MasterSupervisor;
-use Laravel\Horizon\Tests\IntegrationTest;
-use Laravel\Horizon\Events\MasterSupervisorLooped;
-use Laravel\Horizon\Listeners\MonitorMasterSupervisorMemory;
+use Vzool\Horizon\MasterSupervisor;
+use Vzool\Horizon\Tests\IntegrationTest;
+use Vzool\Horizon\Events\MasterSupervisorLooped;
+use Vzool\Horizon\Listeners\MonitorMasterSupervisorMemory;
 
 class MonitorMasterSupervisorMemoryTest extends IntegrationTest
 {
@@ -21,7 +21,6 @@ class MonitorMasterSupervisorMemoryTest extends IntegrationTest
 
         $monitor->handle(new MasterSupervisorLooped($master));
     }
-
 
     public function test_supervisor_is_not_terminated_when_using_low_memory()
     {

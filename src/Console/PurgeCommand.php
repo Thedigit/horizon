@@ -1,14 +1,14 @@
 <?php
 
-namespace Laravel\Horizon\Console;
+namespace Vzool\Horizon\Console;
 
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
-use Laravel\Horizon\MasterSupervisor;
-use Laravel\Horizon\ProcessInspector;
-use Laravel\Horizon\Contracts\ProcessRepository;
-use Laravel\Horizon\Contracts\SupervisorRepository;
-use Laravel\Horizon\Contracts\MasterSupervisorRepository;
+use Vzool\Horizon\MasterSupervisor;
+use Vzool\Horizon\ProcessInspector;
+use Vzool\Horizon\Contracts\ProcessRepository;
+use Vzool\Horizon\Contracts\SupervisorRepository;
+use Vzool\Horizon\Contracts\MasterSupervisorRepository;
 
 class PurgeCommand extends Command
 {
@@ -29,10 +29,10 @@ class PurgeCommand extends Command
     /**
      * Execute the console command.
      *
-     * @param  \Laravel\Horizon\Contracts\MasterSupervisorRepository  $masters
-     * @param  \Laravel\Horizon\Contracts\SupervisorRepository  $supervisors
-     * @param  \Laravel\Horizon\Contracts\ProcessRepository  $processes
-     * @return mixed
+     * @param  \Vzool\Horizon\Contracts\MasterSupervisorRepository  $masters
+     * @param  \Vzool\Horizon\Contracts\SupervisorRepository  $supervisors
+     * @param  \Vzool\Horizon\Contracts\ProcessRepository  $processes
+     * @return void
      */
     public function handle(MasterSupervisorRepository $masters,
                            SupervisorRepository $supervisors,
@@ -49,9 +49,9 @@ class PurgeCommand extends Command
      * Purge any orphan processes.
      *
      * @param  string  $master
-     * @param  \Laravel\Horizon\Contracts\SupervisorRepository  $supervisors
-     * @param  \Laravel\Horizon\Contracts\ProcessRepository  $processes
-     * @return mixed
+     * @param  \Vzool\Horizon\Contracts\SupervisorRepository  $supervisors
+     * @param  \Vzool\Horizon\Contracts\ProcessRepository  $processes
+     * @return void
      */
     public function purge($master,
                           SupervisorRepository $supervisors,
@@ -63,7 +63,7 @@ class PurgeCommand extends Command
             $master, $supervisors->longestActiveTimeout()
         );
 
-        collect($expired)->each(function ($processId) use ($master) {
+        collect($expired)->each(function ($processId) use ($master, $processes) {
             $this->comment("Killing Process: {$processId}");
 
             exec("kill {$processId}");
@@ -76,13 +76,13 @@ class PurgeCommand extends Command
      * Record the orphaned Horizon processes.
      *
      * @param  string  $master
-     * @param  \Laravel\Horizon\Contracts\ProcessRepository  $processes
+     * @param  \Vzool\Horizon\Contracts\ProcessRepository  $processes
      * @return void
      */
     protected function recordOrphans($master, ProcessRepository $processes)
     {
         $processes->orphaned(
-            $master, $orphans = resolve(ProcessInspector::class)->orphaned()
+            $master, $orphans = app(ProcessInspector::class)->orphaned()
         );
 
         foreach ($orphans as $processId) {

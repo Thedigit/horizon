@@ -1,14 +1,14 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Feature;
+namespace Vzool\Horizon\Tests\Feature;
 
 use Cake\Chronos\Chronos;
-use Laravel\Horizon\WorkerProcess;
+use Vzool\Horizon\WorkerProcess;
 use Illuminate\Support\Facades\Event;
 use Symfony\Component\Process\Process;
-use Laravel\Horizon\Tests\IntegrationTest;
-use Laravel\Horizon\Events\UnableToLaunchProcess;
-use Laravel\Horizon\Events\WorkerProcessRestarting;
+use Vzool\Horizon\Tests\IntegrationTest;
+use Vzool\Horizon\Events\UnableToLaunchProcess;
+use Vzool\Horizon\Events\WorkerProcessRestarting;
 
 class WorkerProcessTest extends IntegrationTest
 {
@@ -20,13 +20,12 @@ class WorkerProcessTest extends IntegrationTest
         $workerProcess = new WorkerProcess($process);
         $workerProcess->start(function () {
         });
-        usleep(250 * 1000);
+        sleep(1);
         $workerProcess->monitor();
 
         Event::assertDispatched(WorkerProcessRestarting::class);
         Event::assertDispatched(UnableToLaunchProcess::class);
     }
-
 
     public function test_process_is_not_restarted_during_cooldown_period()
     {
@@ -36,14 +35,13 @@ class WorkerProcessTest extends IntegrationTest
         $workerProcess = new WorkerProcess($process);
         $workerProcess->start(function () {
         });
-        usleep(250 * 1000);
+        sleep(1);
         $workerProcess->monitor();
         $workerProcess->monitor();
 
         Event::assertDispatched(WorkerProcessRestarting::class);
         $this->assertCount(1, Event::dispatched(WorkerProcessRestarting::class));
     }
-
 
     public function test_process_is_restarted_after_cooldown_period()
     {
@@ -55,13 +53,14 @@ class WorkerProcessTest extends IntegrationTest
         });
 
         // Give process time to start...
-        usleep(250 * 1000);
+        sleep(1);
 
         // Should fail and set cooldown timestamp...
         $workerProcess->monitor();
         $this->assertTrue($workerProcess->coolingDown());
 
         // Travel to the future...
+        sleep(1);
         Chronos::setTestNow(Chronos::now()->addMinutes(3));
         $this->assertFalse($workerProcess->coolingDown());
 
@@ -69,7 +68,7 @@ class WorkerProcessTest extends IntegrationTest
         $workerProcess->monitor();
 
         Event::assertDispatched(WorkerProcessRestarting::class);
-        $this->assertEquals(2, count(Event::dispatched(WorkerProcessRestarting::class)));
+        $this->assertCount(2, Event::dispatched(WorkerProcessRestarting::class));
 
         Chronos::setTestNow();
     }

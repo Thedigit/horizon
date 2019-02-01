@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
 
 use Illuminate\Contracts\Redis\Factory as RedisFactory;
 
@@ -9,14 +9,14 @@ class Lock
     /**
      * The Redis factory implementation.
      *
-     * @var RedisFactory
+     * @var \Illuminate\Contracts\Redis\Factory
      */
     public $redis;
 
     /**
      * Create a Horizon lock manager.
      *
-     * @param  RedisFactory  $redis
+     * @param  \Illuminate\Contracts\Redis\Factory  $redis
      * @return void
      */
     public function __construct(RedisFactory $redis)
@@ -25,7 +25,7 @@ class Lock
     }
 
     /**
-     * Execute the given callback if a lock can be aquired.
+     * Execute the given callback if a lock can be acquired.
      *
      * @param  string  $key
      * @param  \Closure  $callback
@@ -86,10 +86,10 @@ class Lock
     /**
      * Get the Redis connection instance.
      *
-     * @return \Illuminate\Redis\Connetions\Connection
+     * @return \Illuminate\Redis\Connections\Connection
      */
     public function connection()
     {
-        return $this->redis->connection('horizon-locks');
+        return $this->redis->connection('horizon');
     }
 }

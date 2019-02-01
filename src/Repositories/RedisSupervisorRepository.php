@@ -1,10 +1,11 @@
 <?php
 
-namespace Laravel\Horizon\Repositories;
+namespace Vzool\Horizon\Repositories;
 
+use Cake\Chronos\Chronos;
 use Illuminate\Support\Arr;
-use Laravel\Horizon\Supervisor;
-use Laravel\Horizon\Contracts\SupervisorRepository;
+use Vzool\Horizon\Supervisor;
+use Vzool\Horizon\Contracts\SupervisorRepository;
 use Illuminate\Contracts\Redis\Factory as RedisFactory;
 
 class RedisSupervisorRepository implements SupervisorRepository
@@ -12,14 +13,14 @@ class RedisSupervisorRepository implements SupervisorRepository
     /**
      * The Redis connection instance.
      *
-     * @var RedisFactory
+     * @var \Illuminate\Contracts\Redis\Factory
      */
     public $redis;
 
     /**
      * Create a new repository instance.
      *
-     * @param  RedisFactory
+     * @param  \Illuminate\Contracts\Redis\Factory  $redis
      * @return void
      */
     public function __construct(RedisFactory $redis)
@@ -34,9 +35,9 @@ class RedisSupervisorRepository implements SupervisorRepository
      */
     public function names()
     {
-        return collect($this->connection()->keys('supervisor:*'))->map(function ($name) {
-            return substr($name, 11);
-        })->all();
+        return $this->connection()->zrevrangebyscore('supervisors', '+inf',
+            Chronos::now()->subSeconds(29)->getTimestamp()
+        );
     }
 
     /**
@@ -53,7 +54,7 @@ class RedisSupervisorRepository implements SupervisorRepository
      * Get information on a supervisor by name.
      *
      * @param  string  $name
-     * @return \StdClass|null
+     * @return \stdClass|null
      */
     public function find($name)
     {
@@ -70,12 +71,14 @@ class RedisSupervisorRepository implements SupervisorRepository
     {
         $records = $this->connection()->pipeline(function ($pipe) use ($names) {
             foreach ($names as $name) {
-                $pipe->hmget('supervisor:'.$name, 'name', 'master', 'pid', 'status', 'processes', 'options');
+                $pipe->hmget('supervisor:'.$name, ['name', 'master', 'pid', 'status', 'processes', 'options']);
             }
         });
 
         return collect($records)->filter()->map(function ($record) {
-            return is_null($record[0]) ? null : (object) [
+            $record = array_values($record);
+
+            return ! $record[0] ? null : (object) [
                 'name' => $record[0],
                 'master' => $record[1],
                 'pid' => $record[2],
@@ -101,7 +104,7 @@ class RedisSupervisorRepository implements SupervisorRepository
     /**
      * Update the information about the given supervisor process.
      *
-     * @param  Supervisor  $supervisor
+     * @param  \Vzool\Horizon\Supervisor  $supervisor
      * @return void
      */
     public function update(Supervisor $supervisor)
@@ -110,25 +113,30 @@ class RedisSupervisorRepository implements SupervisorRepository
             return [$supervisor->options->connection.':'.$pool->queue() => count($pool->processes())];
         })->toJson();
 
-        $this->connection()->hmset(
-            'supervisor:'.$supervisor->name,
-            'name', $supervisor->name,
-            'master', explode(':', $supervisor->name)[0],
-            'pid', $supervisor->pid(),
-            'status', $supervisor->working ? 'running' : 'paused',
-            'processes', $processes,
-            'options', $supervisor->options->toJson()
-        );
+        $this->connection()->pipeline(function ($pipe) use ($supervisor, $processes) {
+            $pipe->hmset(
+                'supervisor:'.$supervisor->name, [
+                    'name' => $supervisor->name,
+                    'master' => explode(':', $supervisor->name)[0],
+                    'pid' => $supervisor->pid(),
+                    'status' => $supervisor->working ? 'running' : 'paused',
+                    'processes' => $processes,
+                    'options' => $supervisor->options->toJson(),
+                ]
+            );
 
-        $this->connection()->expire(
-            'supervisor:'.$supervisor->name, 30
-        );
+            $pipe->zadd('supervisors',
+                Chronos::now()->getTimestamp(), $supervisor->name
+            );
+
+            $pipe->expire('supervisor:'.$supervisor->name, 30);
+        });
     }
 
     /**
      * Remove the supervisor information from storage.
      *
-     * @param  array|string  $name
+     * @param  array|string  $names
      * @return void
      */
     public function forget($names)
@@ -142,15 +150,29 @@ class RedisSupervisorRepository implements SupervisorRepository
         $this->connection()->del(...collect($names)->map(function ($name) {
             return 'supervisor:'.$name;
         })->all());
+
+        $this->connection()->zrem('supervisors', ...$names);
+    }
+
+    /**
+     * Remove expired supervisors from storage.
+     *
+     * @return void
+     */
+    public function flushExpired()
+    {
+        $this->connection()->zremrangebyscore('supervisors', '-inf',
+            Chronos::now()->subSeconds(14)->getTimestamp()
+        );
     }
 
     /**
      * Get the Redis connection instance.
      *
-     * @return \Illuminate\Redis\Connetions\Connection
+     * @return \Illuminate\Redis\Connections\Connection
      */
     protected function connection()
     {
-        return $this->redis->connection('horizon-supervisors');
+        return $this->redis->connection('horizon');
     }
 }

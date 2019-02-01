@@ -1,13 +1,13 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Feature;
+namespace Vzool\Horizon\Tests\Feature;
 
 use Cake\Chronos\Chronos;
-use Laravel\Horizon\JobPayload;
+use Vzool\Horizon\JobPayload;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
-use Laravel\Horizon\Tests\IntegrationTest;
-use Laravel\Horizon\Contracts\JobRepository;
+use Vzool\Horizon\Tests\IntegrationTest;
+use Vzool\Horizon\Contracts\JobRepository;
 
 class JobRetrievalTest extends IntegrationTest
 {
@@ -26,7 +26,7 @@ class JobRetrievalTest extends IntegrationTest
         $recent = $repository->getRecent();
 
         // Test getting all jobs...
-        $this->assertEquals(5, count($recent));
+        $this->assertCount(5, $recent);
         $this->assertEquals($ids[4], $recent->first()->id);
         $this->assertEquals(Jobs\BasicJob::class, $recent->first()->name);
         $this->assertEquals(0, $recent->first()->index);
@@ -35,7 +35,7 @@ class JobRetrievalTest extends IntegrationTest
 
         // Test pagination...
         $recent = $repository->getRecent(1);
-        $this->assertEquals(3, count($recent));
+        $this->assertCount(3, $recent);
         $this->assertEquals($ids[2], $recent->first()->id);
         $this->assertEquals(2, $recent->first()->index);
         $this->assertEquals($ids[0], $recent->last()->id);
@@ -43,9 +43,8 @@ class JobRetrievalTest extends IntegrationTest
 
         // Test no results...
         $recent = $repository->getRecent(4);
-        $this->assertEquals(0, count($recent));
+        $this->assertCount(0, $recent);
     }
-
 
     public function test_recent_jobs_are_correctly_trimmed_and_expired()
     {
@@ -60,18 +59,17 @@ class JobRetrievalTest extends IntegrationTest
         $repository = resolve(JobRepository::class);
         Chronos::setTestNow(Chronos::now()->addHours(3));
 
-        $this->assertEquals(5, Redis::connection('horizon-jobs')->zcard('recent_jobs'));
+        $this->assertEquals(5, Redis::connection('horizon')->zcard('recent_jobs'));
 
         $repository->trimRecentJobs();
-        $this->assertEquals(0, Redis::connection('horizon-jobs')->zcard('recent_jobs'));
+        $this->assertEquals(0, Redis::connection('horizon')->zcard('recent_jobs'));
 
         // Assert job record has a TTL...
         $repository->completed(new JobPayload(json_encode(['id' => $ids[0]])));
-        $this->assertTrue(Redis::connection('horizon-jobs')->ttl($ids[0]) > 0);
+        $this->assertGreaterThan(0, Redis::connection('horizon')->ttl($ids[0]));
 
         Chronos::setTestNow();
     }
-
 
     public function test_paginating_large_job_results_gives_correct_amounts()
     {
@@ -84,9 +82,9 @@ class JobRetrievalTest extends IntegrationTest
         $repository = resolve(JobRepository::class);
 
         $pending = $repository->getRecent();
-        $this->assertEquals(50, count($pending));
+        $this->assertCount(50, $pending);
 
         $pending = $repository->getRecent($pending->last()->index);
-        $this->assertEquals(25, count($pending));
+        $this->assertCount(25, $pending);
     }
 }

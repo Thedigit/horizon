@@ -1,8 +1,8 @@
 <?php
 
-namespace Laravel\Horizon\Http\Middleware;
+namespace Vzool\Horizon\Http\Middleware;
 
-use Laravel\Horizon\Horizon;
+use Vzool\Horizon\Horizon;
 
 class Authenticate
 {
@@ -11,7 +11,7 @@ class Authenticate
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|null
      */
     public function handle($request, $next)
     {

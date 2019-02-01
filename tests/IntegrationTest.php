@@ -1,14 +1,14 @@
 <?php
 
-namespace Laravel\Horizon\Tests;
+namespace Vzool\Horizon\Tests;
 
 use Orchestra\Testbench\TestCase;
 use Illuminate\Queue\WorkerOptions;
 use Illuminate\Support\Facades\Redis;
-use Laravel\Horizon\WorkerCommandString;
-use Laravel\Horizon\SupervisorCommandString;
-use Laravel\Horizon\Contracts\JobRepository;
-use Laravel\Horizon\Contracts\TagRepository;
+use Vzool\Horizon\WorkerCommandString;
+use Vzool\Horizon\Contracts\JobRepository;
+use Vzool\Horizon\Contracts\TagRepository;
+use Vzool\Horizon\SupervisorCommandString;
 
 abstract class IntegrationTest extends TestCase
 {
@@ -56,7 +56,7 @@ abstract class IntegrationTest extends TestCase
      */
     protected function recentJobs()
     {
-        return resolve(JobRepository::class)->totalRecent();
+        return app(JobRepository::class)->totalRecent();
     }
 
     /**
@@ -67,7 +67,7 @@ abstract class IntegrationTest extends TestCase
      */
     protected function monitoredJobs($tag)
     {
-        return resolve(TagRepository::class)->count($tag);
+        return app(TagRepository::class)->count($tag);
     }
 
     /**
@@ -77,7 +77,7 @@ abstract class IntegrationTest extends TestCase
      */
     protected function failedJobs()
     {
-        return resolve(JobRepository::class)->totalFailed();
+        return app(JobRepository::class)->totalFailed();
     }
 
     /**
@@ -102,7 +102,7 @@ abstract class IntegrationTest extends TestCase
      */
     protected function worker()
     {
-        return resolve('queue.worker');
+        return app('queue.worker');
     }
 
     /**
@@ -126,7 +126,7 @@ abstract class IntegrationTest extends TestCase
      */
     protected function getPackageProviders($app)
     {
-        return ['Laravel\Horizon\HorizonServiceProvider'];
+        return ['Vzool\Horizon\HorizonServiceProvider'];
     }
 
     /**

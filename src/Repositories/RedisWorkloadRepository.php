@@ -1,50 +1,50 @@
 <?php
 
-namespace Laravel\Horizon\Repositories;
+namespace Vzool\Horizon\Repositories;
 
-use Laravel\Horizon\WaitTimeCalculator;
-use Laravel\Horizon\Contracts\WorkloadRepository;
-use Laravel\Horizon\Contracts\SupervisorRepository;
+use Vzool\Horizon\WaitTimeCalculator;
+use Vzool\Horizon\Contracts\WorkloadRepository;
+use Vzool\Horizon\Contracts\SupervisorRepository;
 use Illuminate\Contracts\Queue\Factory as QueueFactory;
-use Laravel\Horizon\Contracts\MasterSupervisorRepository;
+use Vzool\Horizon\Contracts\MasterSupervisorRepository;
 
 class RedisWorkloadRepository implements WorkloadRepository
 {
     /**
      * The queue factory implementation.
      *
-     * @var QueueFactory
+     * @var \Illuminate\Contracts\Queue\Factory
      */
     public $queue;
 
     /**
      * The wait time calculator instance.
      *
-     * @var WaitTimeCalculator
+     * @var \Vzool\Horizon\WaitTimeCalculator
      */
     public $waitTime;
 
     /**
      * The master supervisor repository implementation.
      *
-     * @var MasterSupervisorRepository
+     * @var \Vzool\Horizon\Contracts\MasterSupervisorRepository
      */
     private $masters;
 
     /**
      * The supervisor repository implementation.
      *
-     * @var SupervisorRepository
+     * @var \Vzool\Horizon\Contracts\SupervisorRepository
      */
     private $supervisors;
 
     /**
      * Create a new repository instance.
      *
-     * @param  QueueFactory  $queue
-     * @param  WaitTimeCalculator  $waitTime
-     * @param  MasterSupervisorRepository  $masters
-     * @param  SupervisorRepository  $supervisors
+     * @param  \Illuminate\Contracts\Queue\Factory  $queue
+     * @param  \Vzool\Horizon\WaitTimeCalculator  $waitTime
+     * @param  \Vzool\Horizon\Contracts\MasterSupervisorRepository  $masters
+     * @param  \Vzool\Horizon\Contracts\SupervisorRepository  $supervisors
      * @return void
      */
     public function __construct(QueueFactory $queue, WaitTimeCalculator $waitTime,
@@ -69,11 +69,17 @@ class RedisWorkloadRepository implements WorkloadRepository
             ->map(function ($waitTime, $queue) use ($processes) {
                 [$connection, $queueName] = explode(':', $queue, 2);
 
+                $length = ! str_contains($queue, ',')
+                    ? $this->queue->connection($connection)->readyNow($queueName)
+                    : collect(explode(',', $queueName))->sum(function ($queueName) use ($connection) {
+                        return $this->queue->connection($connection)->readyNow($queueName);
+                    });
+                
                 return [
                     'name' => $queueName,
-                    'length' => $this->queue->connection($connection)->readyNow($queueName),
+                    'length' => $length,
                     'wait' => $waitTime,
-                    'processes' => $processes[$queue] ??  0,
+                    'processes' => $processes[$queue] ?? 0,
                 ];
             })->values()->toArray();
     }

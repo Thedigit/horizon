@@ -1,9 +1,9 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Unit;
+namespace Vzool\Horizon\Tests\Unit;
 
-use Laravel\Horizon\Stopwatch;
-use Laravel\Horizon\Tests\UnitTest;
+use Vzool\Horizon\Stopwatch;
+use Vzool\Horizon\Tests\UnitTest;
 
 class StopwatchTest extends UnitTest
 {
@@ -15,6 +15,6 @@ class StopwatchTest extends UnitTest
         $difference = $stopwatch->check('foo');
 
         // Make sure the millisecond difference is within a normal range of variance...
-        $this->assertTrue($difference > 0);
+        $this->assertGreaterThan(0, $difference);
     }
 }

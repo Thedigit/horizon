@@ -1,24 +1,23 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Feature;
+namespace Vzool\Horizon\Tests\Feature;
 
 use Cake\Chronos\Chronos;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
-use Laravel\Horizon\Events\JobReserved;
-use Laravel\Horizon\Events\JobsMigrated;
-use Laravel\Horizon\Tests\IntegrationTest;
-use Laravel\Horizon\Contracts\JobRepository;
+use Vzool\Horizon\Events\JobReserved;
+use Vzool\Horizon\Events\JobsMigrated;
+use Vzool\Horizon\Tests\IntegrationTest;
+use Vzool\Horizon\Contracts\JobRepository;
 
 class QueueProcessingTest extends IntegrationTest
 {
     public function test_legacy_jobs_can_be_processed_without_errors()
     {
-        Queue::push('Laravel\Horizon\Tests\Feature\Jobs\LegacyJob');
+        Queue::push('Vzool\Horizon\Tests\Feature\Jobs\LegacyJob');
         $this->work();
     }
-
 
     public function test_completed_jobs_are_not_normally_stored_in_completed_database()
     {
@@ -28,30 +27,26 @@ class QueueProcessingTest extends IntegrationTest
         $this->assertEquals(0, $this->monitoredJobs('second'));
     }
 
-
     public function test_pending_jobs_are_stored_in_pending_job_database()
     {
         $id = Queue::push(new Jobs\BasicJob);
         $this->assertEquals(1, $this->recentJobs());
-        $this->assertEquals('pending', Redis::connection('horizon-jobs')->hget($id, 'status'));
+        $this->assertSame('pending', Redis::connection('horizon')->hget($id, 'status'));
     }
-
 
     public function test_pending_jobs_are_stored_with_their_tags()
     {
         $id = Queue::push(new Jobs\BasicJob);
-        $payload = json_decode(Redis::connection('horizon-jobs')->hget($id, 'payload'), true);
+        $payload = json_decode(Redis::connection('horizon')->hget($id, 'payload'), true);
         $this->assertEquals(['first', 'second'], $payload['tags']);
     }
-
 
     public function test_pending_jobs_are_stored_with_their_type()
     {
         $id = Queue::push(new Jobs\BasicJob);
-        $payload = json_decode(Redis::connection('horizon-jobs')->hget($id, 'payload'), true);
-        $this->assertEquals('job', $payload['type']);
+        $payload = json_decode(Redis::connection('horizon')->hget($id, 'payload'), true);
+        $this->assertSame('job', $payload['type']);
     }
-
 
     public function test_pending_jobs_are_no_longer_in_pending_database_after_being_worked()
     {
@@ -59,9 +54,8 @@ class QueueProcessingTest extends IntegrationTest
         $this->work();
 
         $recent = resolve(JobRepository::class)->getRecent();
-        $this->assertEquals('completed', $recent[0]->status);
+        $this->assertSame('completed', $recent[0]->status);
     }
-
 
     public function test_pending_job_is_marked_as_reserved_during_processing()
     {
@@ -69,28 +63,27 @@ class QueueProcessingTest extends IntegrationTest
 
         $status = null;
         Event::listen(JobReserved::class, function ($event) use ($id, &$status) {
-            $status = Redis::connection('horizon-jobs')->hget($id, 'status');
+            $status = Redis::connection('horizon')->hget($id, 'status');
         });
 
         $this->work();
 
-        $this->assertEquals('reserved', $status);
+        $this->assertSame('reserved', $status);
     }
-
 
     public function test_stale_reserved_jobs_are_marked_as_pending_after_migrating()
     {
         $id = Queue::later(Chronos::now()->addSeconds(0), new Jobs\BasicJob);
 
-        Redis::connection('horizon-jobs')->hset($id, 'status', 'reserved');
+        Redis::connection('horizon')->hset($id, 'status', 'reserved');
 
         $status = null;
         Event::listen(JobsMigrated::class, function ($event) use ($id, &$status) {
-            $status = Redis::connection('horizon-jobs')->hget($id, 'status');
+            $status = Redis::connection('horizon')->hget($id, 'status');
         });
 
         $this->work();
 
-        $this->assertEquals('pending', $status);
+        $this->assertSame('pending', $status);
     }
 }

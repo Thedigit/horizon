@@ -1,13 +1,13 @@
 <?php
 
-namespace Laravel\Horizon\Tests\Feature;
+namespace Vzool\Horizon\Tests\Feature;
 
 use Mockery;
 use Cake\Chronos\Chronos;
-use Laravel\Horizon\Stopwatch;
+use Vzool\Horizon\Stopwatch;
 use Illuminate\Support\Facades\Queue;
-use Laravel\Horizon\Tests\IntegrationTest;
-use Laravel\Horizon\Contracts\MetricsRepository;
+use Vzool\Horizon\Tests\IntegrationTest;
+use Vzool\Horizon\Contracts\MetricsRepository;
 
 class MetricsTest extends IntegrationTest
 {
@@ -21,7 +21,6 @@ class MetricsTest extends IntegrationTest
 
         $this->assertEquals(2, resolve(MetricsRepository::class)->throughput());
     }
-
 
     public function test_throughput_is_stored_per_job_class()
     {
@@ -40,7 +39,6 @@ class MetricsTest extends IntegrationTest
         $this->assertEquals(1, resolve(MetricsRepository::class)->throughputForJob(Jobs\ConditionallyFailingJob::class));
     }
 
-
     public function test_throughput_is_stored_per_queue()
     {
         Queue::push(new Jobs\BasicJob);
@@ -56,7 +54,6 @@ class MetricsTest extends IntegrationTest
         $this->assertEquals(4, resolve(MetricsRepository::class)->throughput());
         $this->assertEquals(4, resolve(MetricsRepository::class)->throughputForQueue('default'));
     }
-
 
     public function test_average_runtime_is_stored_per_job_class_in_milliseconds()
     {
@@ -74,7 +71,6 @@ class MetricsTest extends IntegrationTest
         $this->assertEquals(1.5, resolve(MetricsRepository::class)->runtimeForJob(Jobs\BasicJob::class));
     }
 
-
     public function test_average_runtime_is_stored_per_queue_in_milliseconds()
     {
         $stopwatch = Mockery::mock(Stopwatch::class);
@@ -91,7 +87,6 @@ class MetricsTest extends IntegrationTest
         $this->assertEquals(1.5, resolve(MetricsRepository::class)->runtimeForQueue('default'));
     }
 
-
     public function test_list_of_all_jobs_with_metric_information_is_maintained()
     {
         Queue::push(new Jobs\BasicJob);
@@ -101,11 +96,10 @@ class MetricsTest extends IntegrationTest
         $this->work();
 
         $jobs = resolve(MetricsRepository::class)->measuredJobs();
-        $this->assertEquals(2, count($jobs));
+        $this->assertCount(2, $jobs);
         $this->assertTrue(in_array(Jobs\ConditionallyFailingJob::class, $jobs));
         $this->assertTrue(in_array(Jobs\BasicJob::class, $jobs));
     }
-
 
     public function test_snapshot_of_metrics_performance_can_be_stored()
     {
@@ -165,7 +159,6 @@ class MetricsTest extends IntegrationTest
         ], $snapshots);
     }
 
-
     public function test_jobs_processed_per_minute_since_last_snapshot_is_calculable()
     {
         $stopwatch = Mockery::mock(Stopwatch::class);
@@ -199,7 +192,6 @@ class MetricsTest extends IntegrationTest
         );
     }
 
-
     public function test_only_past_24_snapshots_are_retained()
     {
         $stopwatch = Mockery::mock(Stopwatch::class);
@@ -219,12 +211,12 @@ class MetricsTest extends IntegrationTest
 
         // Check the job snapshots...
         $snapshots = resolve(MetricsRepository::class)->snapshotsForJob(Jobs\BasicJob::class);
-        $this->assertEquals(24, count($snapshots));
+        $this->assertCount(24, $snapshots);
         $this->assertEquals(Chronos::now()->getTimestamp() - 1, $snapshots[23]->time);
 
         // Check the queue snapshots...
         $snapshots = resolve(MetricsRepository::class)->snapshotsForQueue('default');
-        $this->assertEquals(24, count($snapshots));
+        $this->assertCount(24, $snapshots);
         $this->assertEquals(Chronos::now()->getTimestamp() - 1, $snapshots[23]->time);
 
         Chronos::setTestNow();

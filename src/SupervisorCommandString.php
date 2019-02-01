@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
 
 class SupervisorCommandString
 {
@@ -9,19 +9,21 @@ class SupervisorCommandString
      *
      * @var string
      */
-    public static $command = 'exec php artisan horizon:supervisor';
+    public static $command = 'exec @php artisan horizon:supervisor';
 
     /**
      * Get the command-line representation of the options for a supervisor.
      *
-     * @param  SupervisorOptions  $options
+     * @param  \Vzool\Horizon\SupervisorOptions  $options
      * @return string
      */
     public static function fromOptions(SupervisorOptions $options)
     {
+        $command = str_replace('@php', PhpBinary::path(), static::$command);
+
         return sprintf(
             "%s {$options->name} {$options->connection} %s",
-            static::$command,
+            $command,
             static::toOptionsString($options)
         );
     }
@@ -29,7 +31,7 @@ class SupervisorCommandString
     /**
      * Get the additional option string for the command.
      *
-     * @param  SupervisorOptions  $options
+     * @param  \Vzool\Horizon\SupervisorOptions  $options
      * @return string
      */
     public static function toOptionsString(SupervisorOptions $options)
@@ -47,6 +49,6 @@ class SupervisorCommandString
      */
     public static function reset()
     {
-        static::$command = 'exec php artisan horizon:supervisor';
+        static::$command = 'exec @php artisan horizon:supervisor';
     }
 }

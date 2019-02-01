@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Horizon\Contracts;
+namespace Vzool\Horizon\Contracts;
 
 interface TagRepository
 {
@@ -57,6 +57,7 @@ interface TagRepository
     /**
      * Get the number of jobs matching a given tag.
      *
+     * @param  string  $tag
      * @return int
      */
     public function count($tag);

@@ -1,11 +1,11 @@
 <?php
 
-namespace Laravel\Horizon;
+namespace Vzool\Horizon;
 
 use Closure;
-use Laravel\Horizon\SupervisorCommands\Terminate;
-use Laravel\Horizon\Contracts\HorizonCommandQueue;
-use Laravel\Horizon\MasterSupervisorCommands\AddSupervisor;
+use Vzool\Horizon\SupervisorCommands\Terminate;
+use Vzool\Horizon\Contracts\HorizonCommandQueue;
+use Vzool\Horizon\MasterSupervisorCommands\AddSupervisor;
 
 class SupervisorProcess extends WorkerProcess
 {
@@ -19,7 +19,7 @@ class SupervisorProcess extends WorkerProcess
     /**
      * The supervisor process options.
      *
-     * @var SupervisorOptions
+     * @var \Vzool\Horizon\SupervisorOptions
      */
     public $options;
 
@@ -44,9 +44,9 @@ class SupervisorProcess extends WorkerProcess
     /**
      * Create a new supervisor process instance.
      *
-     * @param  SupervisorOptions  $options
+     * @param  \Vzool\Horizon\SupervisorOptions  $options
      * @param  \Symfony\Component\Process\Process  $process
-     * @param  \Closure  $output
+     * @param  \Closure|null  $output
      * @return void
      */
     public function __construct(SupervisorOptions $options, $process, Closure $output = null)
@@ -106,13 +106,13 @@ class SupervisorProcess extends WorkerProcess
     }
 
     /**
-     * Reprovision this supervisor process based on the provisioning plan.
+     * Re-provision this supervisor process based on the provisioning plan.
      *
      * @return void
      */
     protected function reprovision()
     {
-        resolve(HorizonCommandQueue::class)->push(
+        app(HorizonCommandQueue::class)->push(
             MasterSupervisor::commandQueue(),
             AddSupervisor::class,
             $this->options->toArray()
@@ -127,7 +127,7 @@ class SupervisorProcess extends WorkerProcess
      */
     public function terminateWithStatus($status)
     {
-        resolve(HorizonCommandQueue::class)->push(
+        app(HorizonCommandQueue::class)->push(
             $this->options->name, Terminate::class, ['status' => $status]
         );
     }

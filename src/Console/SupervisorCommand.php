@@ -1,12 +1,11 @@
 <?php
 
-namespace Laravel\Horizon\Console;
+namespace Vzool\Horizon\Console;
 
 use Exception;
 use Illuminate\Console\Command;
-use Laravel\Horizon\Supervisor;
-use Laravel\Horizon\SupervisorFactory;
-use Laravel\Horizon\SupervisorOptions;
+use Vzool\Horizon\SupervisorFactory;
+use Vzool\Horizon\SupervisorOptions;
 
 class SupervisorCommand extends Command
 {
@@ -47,18 +46,18 @@ class SupervisorCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
     public function handle()
     {
-        $supervisor = resolve(SupervisorFactory::class)->make(
+        $supervisor = app(SupervisorFactory::class)->make(
             $this->supervisorOptions()
         );
 
         try {
             $supervisor->ensureNoDuplicateSupervisors();
         } catch (Exception $e) {
-            $this->error("A supervisor with this name is already running.");
+            $this->error('A supervisor with this name is already running.');
 
             return 13;
         }
@@ -69,7 +68,7 @@ class SupervisorCommand extends Command
     /**
      * Start the given supervisor.
      *
-     * @param  \Laravel\Horizon\Supervisor  $supervisor
+     * @param  \Vzool\Horizon\Supervisor  $supervisor
      * @return void
      */
     protected function start($supervisor)
@@ -90,7 +89,7 @@ class SupervisorCommand extends Command
     /**
      * Get the supervisor options.
      *
-     * @return SupervisorOptions
+     * @return \Vzool\Horizon\SupervisorOptions
      */
     protected function supervisorOptions()
     {

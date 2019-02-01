@@ -1,32 +1,32 @@
 <?php
 
-namespace Laravel\Horizon\Http\Controllers;
+namespace Vzool\Horizon\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Laravel\Horizon\Contracts\JobRepository;
-use Laravel\Horizon\Contracts\TagRepository;
+use Vzool\Horizon\Contracts\JobRepository;
+use Vzool\Horizon\Contracts\TagRepository;
 
 class FailedJobsController extends Controller
 {
     /**
      * The job repository implementation.
      *
-     * @var JobRepository
+     * @var \Vzool\Horizon\Contracts\JobRepository
      */
     public $jobs;
 
     /**
      * The tag repository implementation.
      *
-     * @var TagRepository
+     * @var \Vzool\Horizon\Contracts\TagRepository
      */
     public $tags;
 
     /**
      * Create a new controller instance.
      *
-     * @param  JobRepository $jobs
-     * @param  TagRepository $tags
+     * @param  \Vzool\Horizon\Contracts\JobRepository  $jobs
+     * @param  \Vzool\Horizon\Contracts\TagRepository  $tags
      * @return void
      */
     public function __construct(JobRepository $jobs, TagRepository $tags)
@@ -41,7 +41,7 @@ class FailedJobsController extends Controller
      * Get all of the failed jobs.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function index(Request $request)
     {
@@ -95,7 +95,8 @@ class FailedJobsController extends Controller
     /**
      * Get a failed job instance.
      *
-     * @return \Illuminate\Http\Response
+     * @param  string  $id
+     * @return mixed
      */
     public function show($id)
     {
