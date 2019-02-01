@@ -1,6 +1,6 @@
 {
-    "name": "thedigit/horizon-54",
-    "description": "Dashboard and code-driven configuration for Laravel queues. laravel 5.4",
+    "name": "vzool/horizon",
+    "description": "Dashboard and code-driven configuration for Laravel queues.",
     "keywords": [
         "laravel",
         "queue"
@@ -10,10 +10,14 @@
         {
             "name": "Taylor Otwell",
             "email": "taylor@laravel.com"
+        },
+        {
+            "name": "Abdelaziz Elrashed",
+            "email": "aeemh.sdn@gmail.com"
         }
     ],
     "require": {
-     "php": ">=7.1.0",
+        "php": ">=7.1.0",
         "ext-pcntl": "*",
         "ext-posix": "*",
         "cakephp/chronos": "^1.0",
@@ -32,12 +36,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Thedigit\\Horizon\\": "src/"
+            "Vzool\\Horizon\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Thedigit\\Horizon\\Tests\\": "tests/"
+            "Vzool\\Horizon\\Tests\\": "tests/"
         }
     },
     "extra": {
@@ -46,10 +50,10 @@
         },
         "laravel": {
             "providers": [
-                "Thedigit\\Horizon\\HorizonServiceProvider"
+                "Vzool\\Horizon\\HorizonServiceProvider"
             ],
             "aliases": {
-                "Horizon": "Thedigit\\Horizon\\Horizon"
+                "Horizon": "Vzool\\Horizon\\Horizon"
             }
         }
     },
@@ -57,6 +61,5 @@
         "sort-packages": true
     },
     "prefer-stable": true,
-
     "minimum-stability": "dev"
 }
