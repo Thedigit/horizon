@@ -1,11 +1,11 @@
 <?php
 
-namespace Vzool\Horizon;
+namespace Thedigit\Horizon;
 
 use Closure;
-use Vzool\Horizon\SupervisorCommands\Terminate;
-use Vzool\Horizon\Contracts\HorizonCommandQueue;
-use Vzool\Horizon\MasterSupervisorCommands\AddSupervisor;
+use Thedigit\Horizon\SupervisorCommands\Terminate;
+use Thedigit\Horizon\Contracts\HorizonCommandQueue;
+use Thedigit\Horizon\MasterSupervisorCommands\AddSupervisor;
 
 class SupervisorProcess extends WorkerProcess
 {
@@ -19,7 +19,7 @@ class SupervisorProcess extends WorkerProcess
     /**
      * The supervisor process options.
      *
-     * @var \Vzool\Horizon\SupervisorOptions
+     * @var \Thedigit\Horizon\SupervisorOptions
      */
     public $options;
 
@@ -44,7 +44,7 @@ class SupervisorProcess extends WorkerProcess
     /**
      * Create a new supervisor process instance.
      *
-     * @param  \Vzool\Horizon\SupervisorOptions  $options
+     * @param  \Thedigit\Horizon\SupervisorOptions  $options
      * @param  \Symfony\Component\Process\Process  $process
      * @param  \Closure|null  $output
      * @return void

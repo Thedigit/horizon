@@ -1,10 +1,10 @@
 <?php
 
-namespace Vzool\Horizon\MasterSupervisorCommands;
+namespace Thedigit\Horizon\MasterSupervisorCommands;
 
-use Vzool\Horizon\MasterSupervisor;
-use Vzool\Horizon\SupervisorOptions;
-use Vzool\Horizon\SupervisorProcess;
+use Thedigit\Horizon\MasterSupervisor;
+use Thedigit\Horizon\SupervisorOptions;
+use Thedigit\Horizon\SupervisorProcess;
 use Symfony\Component\Process\Process;
 
 class AddSupervisor
@@ -12,7 +12,7 @@ class AddSupervisor
     /**
      * Process the command.
      *
-     * @param  \Vzool\Horizon\MasterSupervisor  $master
+     * @param  \Thedigit\Horizon\MasterSupervisor  $master
      * @param  array  $options
      * @return void
      */
@@ -30,8 +30,8 @@ class AddSupervisor
     /**
      * Create the Symfony process instance.
      *
-     * @param  \Vzool\Horizon\MasterSupervisor  $master
-     * @param  \Vzool\Horizon\SupervisorOptions  $options
+     * @param  \Thedigit\Horizon\MasterSupervisor  $master
+     * @param  \Thedigit\Horizon\SupervisorOptions  $options
      * @return \Symfony\Component\Process\Process
      */
     protected function createProcess(MasterSupervisor $master, SupervisorOptions $options)

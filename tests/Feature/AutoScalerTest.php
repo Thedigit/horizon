@@ -1,14 +1,14 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature;
+namespace Thedigit\Horizon\Tests\Feature;
 
 use Mockery;
-use Vzool\Horizon\AutoScaler;
-use Vzool\Horizon\Supervisor;
-use Vzool\Horizon\SupervisorOptions;
-use Vzool\Horizon\SystemProcessCounter;
-use Vzool\Horizon\Tests\IntegrationTest;
-use Vzool\Horizon\Contracts\MetricsRepository;
+use Thedigit\Horizon\AutoScaler;
+use Thedigit\Horizon\Supervisor;
+use Thedigit\Horizon\SupervisorOptions;
+use Thedigit\Horizon\SystemProcessCounter;
+use Thedigit\Horizon\Tests\IntegrationTest;
+use Thedigit\Horizon\Contracts\MetricsRepository;
 use Illuminate\Contracts\Queue\Factory as QueueFactory;
 
 class AutoScalerTest extends IntegrationTest

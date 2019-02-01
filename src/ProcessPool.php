@@ -1,6 +1,6 @@
 <?php
 
-namespace Vzool\Horizon;
+namespace Thedigit\Horizon;
 
 use Closure;
 use Countable;
@@ -47,7 +47,7 @@ class ProcessPool implements Countable
     /**
      * Create a new process pool instance.
      *
-     * @param  \Vzool\Horizon\SupervisorOptions  $options
+     * @param  \Thedigit\Horizon\SupervisorOptions  $options
      * @param  \Closure|null  $output
      * @return void
      */
@@ -131,7 +131,7 @@ class ProcessPool implements Countable
     /**
      * Mark the given worker process for termination.
      *
-     * @param  \Vzool\Horizon\WorkerProcess  $process
+     * @param  \Thedigit\Horizon\WorkerProcess  $process
      * @return void
      */
     public function markForTermination(WorkerProcess $process)
@@ -171,7 +171,7 @@ class ProcessPool implements Countable
     /**
      * Create a new process instance.
      *
-     * @return \Vzool\Horizon\WorkerProcess
+     * @return \Thedigit\Horizon\WorkerProcess
      */
     protected function createProcess()
     {

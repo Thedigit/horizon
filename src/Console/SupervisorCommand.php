@@ -1,11 +1,11 @@
 <?php
 
-namespace Vzool\Horizon\Console;
+namespace Thedigit\Horizon\Console;
 
 use Exception;
 use Illuminate\Console\Command;
-use Vzool\Horizon\SupervisorFactory;
-use Vzool\Horizon\SupervisorOptions;
+use Thedigit\Horizon\SupervisorFactory;
+use Thedigit\Horizon\SupervisorOptions;
 
 class SupervisorCommand extends Command
 {
@@ -68,7 +68,7 @@ class SupervisorCommand extends Command
     /**
      * Start the given supervisor.
      *
-     * @param  \Vzool\Horizon\Supervisor  $supervisor
+     * @param  \Thedigit\Horizon\Supervisor  $supervisor
      * @return void
      */
     protected function start($supervisor)
@@ -89,7 +89,7 @@ class SupervisorCommand extends Command
     /**
      * Get the supervisor options.
      *
-     * @return \Vzool\Horizon\SupervisorOptions
+     * @return \Thedigit\Horizon\SupervisorOptions
      */
     protected function supervisorOptions()
     {

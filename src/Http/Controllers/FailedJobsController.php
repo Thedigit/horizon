@@ -1,32 +1,32 @@
 <?php
 
-namespace Vzool\Horizon\Http\Controllers;
+namespace Thedigit\Horizon\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Vzool\Horizon\Contracts\JobRepository;
-use Vzool\Horizon\Contracts\TagRepository;
+use Thedigit\Horizon\Contracts\JobRepository;
+use Thedigit\Horizon\Contracts\TagRepository;
 
 class FailedJobsController extends Controller
 {
     /**
      * The job repository implementation.
      *
-     * @var \Vzool\Horizon\Contracts\JobRepository
+     * @var \Thedigit\Horizon\Contracts\JobRepository
      */
     public $jobs;
 
     /**
      * The tag repository implementation.
      *
-     * @var \Vzool\Horizon\Contracts\TagRepository
+     * @var \Thedigit\Horizon\Contracts\TagRepository
      */
     public $tags;
 
     /**
      * Create a new controller instance.
      *
-     * @param  \Vzool\Horizon\Contracts\JobRepository  $jobs
-     * @param  \Vzool\Horizon\Contracts\TagRepository  $tags
+     * @param  \Thedigit\Horizon\Contracts\JobRepository  $jobs
+     * @param  \Thedigit\Horizon\Contracts\TagRepository  $tags
      * @return void
      */
     public function __construct(JobRepository $jobs, TagRepository $tags)

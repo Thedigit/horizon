@@ -1,12 +1,12 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Controller;
+namespace Thedigit\Horizon\Tests\Controller;
 
-use Vzool\Horizon\Supervisor;
-use Vzool\Horizon\MasterSupervisor;
-use Vzool\Horizon\SupervisorOptions;
-use Vzool\Horizon\Contracts\SupervisorRepository;
-use Vzool\Horizon\Contracts\MasterSupervisorRepository;
+use Thedigit\Horizon\Supervisor;
+use Thedigit\Horizon\MasterSupervisor;
+use Thedigit\Horizon\SupervisorOptions;
+use Thedigit\Horizon\Contracts\SupervisorRepository;
+use Thedigit\Horizon\Contracts\MasterSupervisorRepository;
 
 class MasterSupervisorControllerTest extends AbstractControllerTest
 {

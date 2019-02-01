@@ -1,9 +1,9 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature;
+namespace Thedigit\Horizon\Tests\Feature;
 
-use Vzool\Horizon\JobId;
-use Vzool\Horizon\Tests\IntegrationTest;
+use Thedigit\Horizon\JobId;
+use Thedigit\Horizon\Tests\IntegrationTest;
 
 class JobIdTest extends IntegrationTest
 {

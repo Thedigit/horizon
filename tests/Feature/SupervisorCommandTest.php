@@ -1,10 +1,10 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature;
+namespace Thedigit\Horizon\Tests\Feature;
 
-use Vzool\Horizon\SupervisorFactory;
-use Vzool\Horizon\Tests\IntegrationTest;
-use Vzool\Horizon\Tests\Feature\Fixtures\FakeSupervisorFactory;
+use Thedigit\Horizon\SupervisorFactory;
+use Thedigit\Horizon\Tests\IntegrationTest;
+use Thedigit\Horizon\Tests\Feature\Fixtures\FakeSupervisorFactory;
 
 class SupervisorCommandTest extends IntegrationTest
 {

@@ -1,12 +1,12 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature;
+namespace Thedigit\Horizon\Tests\Feature;
 
-use Vzool\Horizon\Jobs\MonitorTag;
+use Thedigit\Horizon\Jobs\MonitorTag;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
-use Vzool\Horizon\Jobs\RetryFailedJob;
-use Vzool\Horizon\Tests\IntegrationTest;
+use Thedigit\Horizon\Jobs\RetryFailedJob;
+use Thedigit\Horizon\Tests\IntegrationTest;
 
 class RetryJobTest extends IntegrationTest
 {

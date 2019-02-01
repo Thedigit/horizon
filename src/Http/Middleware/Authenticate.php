@@ -1,8 +1,8 @@
 <?php
 
-namespace Vzool\Horizon\Http\Middleware;
+namespace Thedigit\Horizon\Http\Middleware;
 
-use Vzool\Horizon\Horizon;
+use Thedigit\Horizon\Horizon;
 
 class Authenticate
 {

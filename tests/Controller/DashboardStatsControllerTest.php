@@ -1,13 +1,13 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Controller;
+namespace Thedigit\Horizon\Tests\Controller;
 
 use Mockery;
-use Vzool\Horizon\WaitTimeCalculator;
-use Vzool\Horizon\Contracts\JobRepository;
-use Vzool\Horizon\Contracts\MetricsRepository;
-use Vzool\Horizon\Contracts\SupervisorRepository;
-use Vzool\Horizon\Contracts\MasterSupervisorRepository;
+use Thedigit\Horizon\WaitTimeCalculator;
+use Thedigit\Horizon\Contracts\JobRepository;
+use Thedigit\Horizon\Contracts\MetricsRepository;
+use Thedigit\Horizon\Contracts\SupervisorRepository;
+use Thedigit\Horizon\Contracts\MasterSupervisorRepository;
 
 class DashboardStatsControllerTest extends AbstractControllerTest
 {

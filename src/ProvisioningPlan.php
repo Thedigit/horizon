@@ -1,11 +1,11 @@
 <?php
 
-namespace Vzool\Horizon;
+namespace Thedigit\Horizon;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Vzool\Horizon\Contracts\HorizonCommandQueue;
-use Vzool\Horizon\MasterSupervisorCommands\AddSupervisor;
+use Thedigit\Horizon\Contracts\HorizonCommandQueue;
+use Thedigit\Horizon\MasterSupervisorCommands\AddSupervisor;
 
 class ProvisioningPlan
 {
@@ -101,7 +101,7 @@ class ProvisioningPlan
     /**
      * Add a supervisor with the given options.
      *
-     * @param  \Vzool\Horizon\SupervisorOptions  $options
+     * @param  \Thedigit\Horizon\SupervisorOptions  $options
      * @return void
      */
     protected function add(SupervisorOptions $options)
@@ -146,7 +146,7 @@ class ProvisioningPlan
      *
      * @param  string  $supervisor
      * @param  array  $options
-     * @return \Vzool\Horizon\SupervisorOptions
+     * @return \Thedigit\Horizon\SupervisorOptions
      */
     protected function convert($supervisor, $options)
     {

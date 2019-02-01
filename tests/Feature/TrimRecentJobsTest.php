@@ -1,14 +1,14 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature;
+namespace Thedigit\Horizon\Tests\Feature;
 
 use Mockery;
 use Cake\Chronos\Chronos;
-use Vzool\Horizon\MasterSupervisor;
-use Vzool\Horizon\Tests\IntegrationTest;
-use Vzool\Horizon\Contracts\JobRepository;
-use Vzool\Horizon\Listeners\TrimRecentJobs;
-use Vzool\Horizon\Events\MasterSupervisorLooped;
+use Thedigit\Horizon\MasterSupervisor;
+use Thedigit\Horizon\Tests\IntegrationTest;
+use Thedigit\Horizon\Contracts\JobRepository;
+use Thedigit\Horizon\Listeners\TrimRecentJobs;
+use Thedigit\Horizon\Events\MasterSupervisorLooped;
 
 class TrimRecentJobsTest extends IntegrationTest
 {

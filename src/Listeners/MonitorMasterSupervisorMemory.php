@@ -1,15 +1,15 @@
 <?php
 
-namespace Vzool\Horizon\Listeners;
+namespace Thedigit\Horizon\Listeners;
 
-use Vzool\Horizon\Events\MasterSupervisorLooped;
+use Thedigit\Horizon\Events\MasterSupervisorLooped;
 
 class MonitorMasterSupervisorMemory
 {
     /**
      * Handle the event.
      *
-     * @param  \Vzool\Horizon\Events\MasterSupervisorLooped  $event
+     * @param  \Thedigit\Horizon\Events\MasterSupervisorLooped  $event
      * @return void
      */
     public function handle(MasterSupervisorLooped $event)

@@ -1,15 +1,15 @@
 <?php
 
-namespace Vzool\Horizon\Listeners;
+namespace Thedigit\Horizon\Listeners;
 
-use Vzool\Horizon\Events\SupervisorLooped;
+use Thedigit\Horizon\Events\SupervisorLooped;
 
 class PruneTerminatingProcesses
 {
     /**
      * Handle the event.
      *
-     * @param  \Vzool\Horizon\Events\SupervisorLooped  $event
+     * @param  \Thedigit\Horizon\Events\SupervisorLooped  $event
      * @return void
      */
     public function handle(SupervisorLooped $event)

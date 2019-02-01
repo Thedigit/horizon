@@ -13,27 +13,29 @@ Horizon provides a beautiful dashboard and code-driven configuration for your La
 
 All of your worker configuration is stored in a single, simple configuration file, allowing your configuration to stay in source control where your entire team can collaborate.
 
+laravel 5.4 compatible 
+
 ## Setup
 
 1. Install by composer (required *PHP 7.1+*)
 
 ```bash
-composer require vzool/horizon
+composer require thedigit/horizon
 ```
 
-2. Add the following to `config/app.php` 
+2. Add the following to `config/app.php`
 ```php
 'providers' => [
 
     // ..
 
-    Vzool\Horizon\HorizonServiceProvider::class,
+    Thedigit\Horizon\HorizonServiceProvider::class,
 ],
 'aliases' => [
 
     // ..
 
-    "Horizon" => Vzool\Horizon\Horizon::class,
+    "Horizon" => Thedigit\Horizon\Horizon::class,
 ]
 ```
 
@@ -54,7 +56,7 @@ namespace App\Providers;
 
 // ..
 
-use Vzool\Horizon\Horizon;
+use Thedigit\Horizon\Horizon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -68,10 +70,10 @@ class AppServiceProvider extends ServiceProvider
         // ..
 
         // Add Horizon authentication [IGNORE IN DEV]
-        
+
         Horizon::auth(function ($request) {
-        
-            // allow admins  only to see this page 
+
+            // allow admins  only to see this page
             // return \Auth::user()->is_admin;
             // or return any true / false
         });

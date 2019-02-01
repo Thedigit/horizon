@@ -1,9 +1,9 @@
 <?php
 
-namespace Vzool\Horizon\Console;
+namespace Thedigit\Horizon\Console;
 
 use Illuminate\Console\Command;
-use Vzool\Horizon\Contracts\MasterSupervisorRepository;
+use Thedigit\Horizon\Contracts\MasterSupervisorRepository;
 
 class ListCommand extends Command
 {

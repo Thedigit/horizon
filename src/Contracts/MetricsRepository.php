@@ -1,6 +1,6 @@
 <?php
 
-namespace Vzool\Horizon\Contracts;
+namespace Thedigit\Horizon\Contracts;
 
 interface MetricsRepository
 {

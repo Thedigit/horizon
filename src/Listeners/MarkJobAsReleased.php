@@ -1,23 +1,23 @@
 <?php
 
-namespace Vzool\Horizon\Listeners;
+namespace Thedigit\Horizon\Listeners;
 
-use Vzool\Horizon\Events\JobReleased;
-use Vzool\Horizon\Contracts\JobRepository;
+use Thedigit\Horizon\Events\JobReleased;
+use Thedigit\Horizon\Contracts\JobRepository;
 
 class MarkJobAsReleased
 {
     /**
      * The job repository implementation.
      *
-     * @var \Vzool\Horizon\Contracts\JobRepository
+     * @var \Thedigit\Horizon\Contracts\JobRepository
      */
     public $jobs;
 
     /**
      * Create a new listener instance.
      *
-     * @param  \Vzool\Horizon\Contracts\JobRepository  $jobs
+     * @param  \Thedigit\Horizon\Contracts\JobRepository  $jobs
      * @return void
      */
     public function __construct(JobRepository $jobs)
@@ -28,7 +28,7 @@ class MarkJobAsReleased
     /**
      * Handle the event.
      *
-     * @param  \Vzool\Horizon\Events\JobReleased  $event
+     * @param  \Thedigit\Horizon\Events\JobReleased  $event
      * @return void
      */
     public function handle(JobReleased $event)

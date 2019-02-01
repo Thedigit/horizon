@@ -1,17 +1,17 @@
 <?php
 
-namespace Vzool\Horizon\Http\Controllers;
+namespace Thedigit\Horizon\Http\Controllers;
 
-use Vzool\Horizon\Contracts\SupervisorRepository;
-use Vzool\Horizon\Contracts\MasterSupervisorRepository;
+use Thedigit\Horizon\Contracts\SupervisorRepository;
+use Thedigit\Horizon\Contracts\MasterSupervisorRepository;
 
 class MasterSupervisorController extends Controller
 {
     /**
      * Get all of the master supervisors and their underlying supervisors.
      *
-     * @param  \Vzool\Horizon\Contracts\MasterSupervisorRepository  $masters
-     * @param  \Vzool\Horizon\Contracts\SupervisorRepository  $supervisors
+     * @param  \Thedigit\Horizon\Contracts\MasterSupervisorRepository  $masters
+     * @param  \Thedigit\Horizon\Contracts\SupervisorRepository  $supervisors
      * @return \Illuminate\Support\Collection
      */
     public function index(MasterSupervisorRepository $masters,

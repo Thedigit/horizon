@@ -1,6 +1,6 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Unit\Fixtures;
+namespace Thedigit\Horizon\Tests\Unit\Fixtures;
 
 use Illuminate\Database\Eloquent\Model;
 

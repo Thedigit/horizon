@@ -1,8 +1,8 @@
 <?php
 
-namespace Vzool\Horizon\Contracts;
+namespace Thedigit\Horizon\Contracts;
 
-use Vzool\Horizon\Supervisor;
+use Thedigit\Horizon\Supervisor;
 
 interface SupervisorRepository
 {
@@ -46,7 +46,7 @@ interface SupervisorRepository
     /**
      * Update the information about the given supervisor process.
      *
-     * @param  \Vzool\Horizon\Supervisor  $supervisor
+     * @param  \Thedigit\Horizon\Supervisor  $supervisor
      * @return void
      */
     public function update(Supervisor $supervisor);

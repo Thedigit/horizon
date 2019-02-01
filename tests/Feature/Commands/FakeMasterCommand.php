@@ -1,8 +1,8 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature\Commands;
+namespace Thedigit\Horizon\Tests\Feature\Commands;
 
-use Vzool\Horizon\MasterSupervisor;
+use Thedigit\Horizon\MasterSupervisor;
 
 class FakeMasterCommand
 {

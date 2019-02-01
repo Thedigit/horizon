@@ -1,22 +1,22 @@
 <?php
 
-namespace Vzool\Horizon\Http\Controllers;
+namespace Thedigit\Horizon\Http\Controllers;
 
-use Vzool\Horizon\Contracts\MetricsRepository;
+use Thedigit\Horizon\Contracts\MetricsRepository;
 
 class QueueMetricsController extends Controller
 {
     /**
      * The metrics repository implementation.
      *
-     * @var \Vzool\Horizon\Contracts\MetricsRepository
+     * @var \Thedigit\Horizon\Contracts\MetricsRepository
      */
     public $metrics;
 
     /**
      * Create a new controller instance.
      *
-     * @param  \Vzool\Horizon\Contracts\MetricsRepository  $metrics
+     * @param  \Thedigit\Horizon\Contracts\MetricsRepository  $metrics
      * @return void
      */
     public function __construct(MetricsRepository $metrics)

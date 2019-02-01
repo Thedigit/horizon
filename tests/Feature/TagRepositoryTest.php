@@ -1,9 +1,9 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature;
+namespace Thedigit\Horizon\Tests\Feature;
 
-use Vzool\Horizon\Tests\IntegrationTest;
-use Vzool\Horizon\Contracts\TagRepository;
+use Thedigit\Horizon\Tests\IntegrationTest;
+use Thedigit\Horizon\Contracts\TagRepository;
 
 class TagRepositoryTest extends IntegrationTest
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Vzool\Horizon\Jobs;
+namespace Thedigit\Horizon\Jobs;
 
-use Vzool\Horizon\JobId;
-use Vzool\Horizon\Contracts\JobRepository;
+use Thedigit\Horizon\JobId;
+use Thedigit\Horizon\Contracts\JobRepository;
 use Illuminate\Contracts\Queue\Factory as Queue;
 
 class RetryFailedJob
@@ -30,7 +30,7 @@ class RetryFailedJob
      * Execute the job.
      *
      * @param  \Illuminate\Contracts\Queue\Factory  $queue
-     * @param  \Vzool\Horizon\Contracts\JobRepository  $jobs
+     * @param  \Thedigit\Horizon\Contracts\JobRepository  $jobs
      * @return void
      */
     public function handle(Queue $queue, JobRepository $jobs)

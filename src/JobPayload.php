@@ -1,6 +1,6 @@
 <?php
 
-namespace Vzool\Horizon;
+namespace Thedigit\Horizon;
 
 use ArrayAccess;
 use Illuminate\Support\Arr;

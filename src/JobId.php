@@ -1,8 +1,8 @@
 <?php
 
-namespace Vzool\Horizon;
+namespace Thedigit\Horizon;
 
-use Vzool\Horizon\Contracts\JobRepository;
+use Thedigit\Horizon\Contracts\JobRepository;
 
 class JobId
 {

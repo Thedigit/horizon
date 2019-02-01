@@ -1,9 +1,9 @@
 <?php
 
-namespace Vzool\Horizon\Jobs;
+namespace Thedigit\Horizon\Jobs;
 
-use Vzool\Horizon\Contracts\JobRepository;
-use Vzool\Horizon\Contracts\TagRepository;
+use Thedigit\Horizon\Contracts\JobRepository;
+use Thedigit\Horizon\Contracts\TagRepository;
 
 class StopMonitoringTag
 {
@@ -28,8 +28,8 @@ class StopMonitoringTag
     /**
      * Execute the job.
      *
-     * @param  \Vzool\Horizon\Contracts\JobRepository  $jobs
-     * @param  \Vzool\Horizon\Contracts\TagRepository  $tags
+     * @param  \Thedigit\Horizon\Contracts\JobRepository  $jobs
+     * @param  \Thedigit\Horizon\Contracts\TagRepository  $tags
      * @return void
      */
     public function handle(JobRepository $jobs, TagRepository $tags)

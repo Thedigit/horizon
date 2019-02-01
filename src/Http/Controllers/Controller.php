@@ -1,8 +1,8 @@
 <?php
 
-namespace Vzool\Horizon\Http\Controllers;
+namespace Thedigit\Horizon\Http\Controllers;
 
-use Vzool\Horizon\Http\Middleware\Authenticate;
+use Thedigit\Horizon\Http\Middleware\Authenticate;
 use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController

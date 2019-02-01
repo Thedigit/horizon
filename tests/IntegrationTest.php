@@ -1,14 +1,14 @@
 <?php
 
-namespace Vzool\Horizon\Tests;
+namespace Thedigit\Horizon\Tests;
 
 use Orchestra\Testbench\TestCase;
 use Illuminate\Queue\WorkerOptions;
 use Illuminate\Support\Facades\Redis;
-use Vzool\Horizon\WorkerCommandString;
-use Vzool\Horizon\Contracts\JobRepository;
-use Vzool\Horizon\Contracts\TagRepository;
-use Vzool\Horizon\SupervisorCommandString;
+use Thedigit\Horizon\WorkerCommandString;
+use Thedigit\Horizon\Contracts\JobRepository;
+use Thedigit\Horizon\Contracts\TagRepository;
+use Thedigit\Horizon\SupervisorCommandString;
 
 abstract class IntegrationTest extends TestCase
 {
@@ -126,7 +126,7 @@ abstract class IntegrationTest extends TestCase
      */
     protected function getPackageProviders($app)
     {
-        return ['Vzool\Horizon\HorizonServiceProvider'];
+        return ['Thedigit\Horizon\HorizonServiceProvider'];
     }
 
     /**

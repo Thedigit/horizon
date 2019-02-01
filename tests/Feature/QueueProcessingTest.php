@@ -1,21 +1,21 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature;
+namespace Thedigit\Horizon\Tests\Feature;
 
 use Cake\Chronos\Chronos;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
-use Vzool\Horizon\Events\JobReserved;
-use Vzool\Horizon\Events\JobsMigrated;
-use Vzool\Horizon\Tests\IntegrationTest;
-use Vzool\Horizon\Contracts\JobRepository;
+use Thedigit\Horizon\Events\JobReserved;
+use Thedigit\Horizon\Events\JobsMigrated;
+use Thedigit\Horizon\Tests\IntegrationTest;
+use Thedigit\Horizon\Contracts\JobRepository;
 
 class QueueProcessingTest extends IntegrationTest
 {
     public function test_legacy_jobs_can_be_processed_without_errors()
     {
-        Queue::push('Vzool\Horizon\Tests\Feature\Jobs\LegacyJob');
+        Queue::push('Thedigit\Horizon\Tests\Feature\Jobs\LegacyJob');
         $this->work();
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Vzool\Horizon\Events;
+namespace Thedigit\Horizon\Events;
 
 class JobFailed extends RedisEvent
 {

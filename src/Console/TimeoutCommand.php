@@ -1,6 +1,6 @@
 <?php
 
-namespace Vzool\Horizon\Console;
+namespace Thedigit\Horizon\Console;
 
 use Illuminate\Console\Command;
 

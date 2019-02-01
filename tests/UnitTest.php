@@ -1,6 +1,6 @@
 <?php
 
-namespace Vzool\Horizon\Tests;
+namespace Thedigit\Horizon\Tests;
 
 use Mockery;
 use PHPUnit\Framework\TestCase;

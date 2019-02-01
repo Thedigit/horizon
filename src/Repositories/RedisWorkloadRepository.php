@@ -1,12 +1,12 @@
 <?php
 
-namespace Vzool\Horizon\Repositories;
+namespace Thedigit\Horizon\Repositories;
 
-use Vzool\Horizon\WaitTimeCalculator;
-use Vzool\Horizon\Contracts\WorkloadRepository;
-use Vzool\Horizon\Contracts\SupervisorRepository;
+use Thedigit\Horizon\WaitTimeCalculator;
+use Thedigit\Horizon\Contracts\WorkloadRepository;
+use Thedigit\Horizon\Contracts\SupervisorRepository;
 use Illuminate\Contracts\Queue\Factory as QueueFactory;
-use Vzool\Horizon\Contracts\MasterSupervisorRepository;
+use Thedigit\Horizon\Contracts\MasterSupervisorRepository;
 
 class RedisWorkloadRepository implements WorkloadRepository
 {
@@ -20,21 +20,21 @@ class RedisWorkloadRepository implements WorkloadRepository
     /**
      * The wait time calculator instance.
      *
-     * @var \Vzool\Horizon\WaitTimeCalculator
+     * @var \Thedigit\Horizon\WaitTimeCalculator
      */
     public $waitTime;
 
     /**
      * The master supervisor repository implementation.
      *
-     * @var \Vzool\Horizon\Contracts\MasterSupervisorRepository
+     * @var \Thedigit\Horizon\Contracts\MasterSupervisorRepository
      */
     private $masters;
 
     /**
      * The supervisor repository implementation.
      *
-     * @var \Vzool\Horizon\Contracts\SupervisorRepository
+     * @var \Thedigit\Horizon\Contracts\SupervisorRepository
      */
     private $supervisors;
 
@@ -42,9 +42,9 @@ class RedisWorkloadRepository implements WorkloadRepository
      * Create a new repository instance.
      *
      * @param  \Illuminate\Contracts\Queue\Factory  $queue
-     * @param  \Vzool\Horizon\WaitTimeCalculator  $waitTime
-     * @param  \Vzool\Horizon\Contracts\MasterSupervisorRepository  $masters
-     * @param  \Vzool\Horizon\Contracts\SupervisorRepository  $supervisors
+     * @param  \Thedigit\Horizon\WaitTimeCalculator  $waitTime
+     * @param  \Thedigit\Horizon\Contracts\MasterSupervisorRepository  $masters
+     * @param  \Thedigit\Horizon\Contracts\SupervisorRepository  $supervisors
      * @return void
      */
     public function __construct(QueueFactory $queue, WaitTimeCalculator $waitTime,

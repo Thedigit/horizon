@@ -1,14 +1,14 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature;
+namespace Thedigit\Horizon\Tests\Feature;
 
 use Mockery;
-use Vzool\Horizon\Supervisor;
-use Vzool\Horizon\SupervisorOptions;
-use Vzool\Horizon\WaitTimeCalculator;
-use Vzool\Horizon\Tests\IntegrationTest;
-use Vzool\Horizon\Contracts\MetricsRepository;
-use Vzool\Horizon\Contracts\SupervisorRepository;
+use Thedigit\Horizon\Supervisor;
+use Thedigit\Horizon\SupervisorOptions;
+use Thedigit\Horizon\WaitTimeCalculator;
+use Thedigit\Horizon\Tests\IntegrationTest;
+use Thedigit\Horizon\Contracts\MetricsRepository;
+use Thedigit\Horizon\Contracts\SupervisorRepository;
 use Illuminate\Contracts\Queue\Factory as QueueFactory;
 
 class WaitTimeCalculatorTest extends IntegrationTest

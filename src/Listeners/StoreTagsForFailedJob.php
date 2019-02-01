@@ -1,23 +1,23 @@
 <?php
 
-namespace Vzool\Horizon\Listeners;
+namespace Thedigit\Horizon\Listeners;
 
-use Vzool\Horizon\Events\JobFailed;
-use Vzool\Horizon\Contracts\TagRepository;
+use Thedigit\Horizon\Events\JobFailed;
+use Thedigit\Horizon\Contracts\TagRepository;
 
 class StoreTagsForFailedJob
 {
     /**
      * The tag repository implementation.
      *
-     * @var \Vzool\Horizon\Contracts\TagRepository
+     * @var \Thedigit\Horizon\Contracts\TagRepository
      */
     public $tags;
 
     /**
      * Create a new listener instance.
      *
-     * @param  \Vzool\Horizon\Contracts\TagRepository  $tags
+     * @param  \Thedigit\Horizon\Contracts\TagRepository  $tags
      * @return void
      */
     public function __construct(TagRepository $tags)
@@ -28,7 +28,7 @@ class StoreTagsForFailedJob
     /**
      * Handle the event.
      *
-     * @param  \Vzool\Horizon\Events\JobFailed  $event
+     * @param  \Thedigit\Horizon\Events\JobFailed  $event
      * @return void
      */
     public function handle(JobFailed $event)

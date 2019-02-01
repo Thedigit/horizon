@@ -1,9 +1,9 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Controller;
+namespace Thedigit\Horizon\Tests\Controller;
 
-use Vzool\Horizon\Horizon;
-use Vzool\Horizon\Tests\IntegrationTest;
+use Thedigit\Horizon\Horizon;
+use Thedigit\Horizon\Tests\IntegrationTest;
 
 abstract class AbstractControllerTest extends IntegrationTest
 {

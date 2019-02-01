@@ -1,9 +1,9 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature\Fakes;
+namespace Thedigit\Horizon\Tests\Feature\Fakes;
 
 use Exception;
-use Vzool\Horizon\Supervisor;
+use Thedigit\Horizon\Supervisor;
 
 class SupervisorThatThrowsException extends Supervisor
 {

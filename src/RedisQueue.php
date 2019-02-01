@@ -1,13 +1,13 @@
 <?php
 
-namespace Vzool\Horizon;
+namespace Thedigit\Horizon;
 
 use Illuminate\Support\Str;
-use Vzool\Horizon\Events\JobPushed;
-use Vzool\Horizon\Events\JobDeleted;
-use Vzool\Horizon\Events\JobReleased;
-use Vzool\Horizon\Events\JobReserved;
-use Vzool\Horizon\Events\JobsMigrated;
+use Thedigit\Horizon\Events\JobPushed;
+use Thedigit\Horizon\Events\JobDeleted;
+use Thedigit\Horizon\Events\JobReleased;
+use Thedigit\Horizon\Events\JobReserved;
+use Thedigit\Horizon\Events\JobsMigrated;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Queue\RedisQueue as BaseQueue;
 

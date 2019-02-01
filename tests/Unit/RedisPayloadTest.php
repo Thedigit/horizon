@@ -1,24 +1,24 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Unit;
+namespace Thedigit\Horizon\Tests\Unit;
 
 use Mockery;
 use StdClass;
-use Vzool\Horizon\JobPayload;
-use Vzool\Horizon\Tests\UnitTest;
+use Thedigit\Horizon\JobPayload;
+use Thedigit\Horizon\Tests\UnitTest;
 use Illuminate\Contracts\Mail\Mailable;
 use Illuminate\Mail\SendQueuedMailable;
 use Illuminate\Events\CallQueuedListener;
 use Illuminate\Broadcasting\BroadcastEvent;
-use Vzool\Horizon\Tests\Unit\Fixtures\FakeEvent;
-use Vzool\Horizon\Tests\Unit\Fixtures\FakeModel;
+use Thedigit\Horizon\Tests\Unit\Fixtures\FakeEvent;
+use Thedigit\Horizon\Tests\Unit\Fixtures\FakeModel;
 use Illuminate\Notifications\SendQueuedNotifications;
-use Vzool\Horizon\Tests\Unit\Fixtures\FakeListener;
-use Vzool\Horizon\Tests\Unit\Fixtures\FakeEventWithModel;
-use Vzool\Horizon\Tests\Unit\Fixtures\FakeJobWithTagsMethod;
-use Vzool\Horizon\Tests\Unit\Fixtures\FakeJobWithEloquentModel;
+use Thedigit\Horizon\Tests\Unit\Fixtures\FakeListener;
+use Thedigit\Horizon\Tests\Unit\Fixtures\FakeEventWithModel;
+use Thedigit\Horizon\Tests\Unit\Fixtures\FakeJobWithTagsMethod;
+use Thedigit\Horizon\Tests\Unit\Fixtures\FakeJobWithEloquentModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Vzool\Horizon\Tests\Unit\Fixtures\FakeJobWithEloquentCollection;
+use Thedigit\Horizon\Tests\Unit\Fixtures\FakeJobWithEloquentCollection;
 
 class RedisPayloadTest extends UnitTest
 {

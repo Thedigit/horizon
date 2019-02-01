@@ -1,11 +1,11 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Controller;
+namespace Thedigit\Horizon\Tests\Controller;
 
 use Mockery;
-use Vzool\Horizon\JobPayload;
-use Vzool\Horizon\Contracts\JobRepository;
-use Vzool\Horizon\Contracts\TagRepository;
+use Thedigit\Horizon\JobPayload;
+use Thedigit\Horizon\Contracts\JobRepository;
+use Thedigit\Horizon\Contracts\TagRepository;
 
 class MonitoringControllerTest extends AbstractControllerTest
 {

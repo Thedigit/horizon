@@ -1,8 +1,8 @@
 <?php
 
-namespace Vzool\Horizon\Events;
+namespace Thedigit\Horizon\Events;
 
-use Vzool\Horizon\JobPayload;
+use Thedigit\Horizon\JobPayload;
 
 class RedisEvent
 {

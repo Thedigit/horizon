@@ -1,32 +1,32 @@
 <?php
 
-namespace Vzool\Horizon\Listeners;
+namespace Thedigit\Horizon\Listeners;
 
-use Vzool\Horizon\Stopwatch;
-use Vzool\Horizon\Events\JobDeleted;
-use Vzool\Horizon\Contracts\MetricsRepository;
+use Thedigit\Horizon\Stopwatch;
+use Thedigit\Horizon\Events\JobDeleted;
+use Thedigit\Horizon\Contracts\MetricsRepository;
 
 class UpdateJobMetrics
 {
     /**
      * The metrics repository implementation.
      *
-     * @var \Vzool\Horizon\Contracts\MetricsRepository
+     * @var \Thedigit\Horizon\Contracts\MetricsRepository
      */
     public $metrics;
 
     /**
      * The stopwatch instance.
      *
-     * @var \Vzool\Horizon\Stopwatch
+     * @var \Thedigit\Horizon\Stopwatch
      */
     public $watch;
 
     /**
      * Create a new listener instance.
      *
-     * @param  \Vzool\Horizon\Contracts\MetricsRepository  $metrics
-     * @param  \Vzool\Horizon\Stopwatch  $watch
+     * @param  \Thedigit\Horizon\Contracts\MetricsRepository  $metrics
+     * @param  \Thedigit\Horizon\Stopwatch  $watch
      * @return void
      */
     public function __construct(MetricsRepository $metrics, Stopwatch $watch)
@@ -38,7 +38,7 @@ class UpdateJobMetrics
     /**
      * Stop gathering metrics for a job.
      *
-     * @param  \Vzool\Horizon\Events\JobDeleted  $event
+     * @param  \Thedigit\Horizon\Events\JobDeleted  $event
      * @return void
      */
     public function handle(JobDeleted $event)

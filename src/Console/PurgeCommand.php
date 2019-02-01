@@ -1,14 +1,14 @@
 <?php
 
-namespace Vzool\Horizon\Console;
+namespace Thedigit\Horizon\Console;
 
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
-use Vzool\Horizon\MasterSupervisor;
-use Vzool\Horizon\ProcessInspector;
-use Vzool\Horizon\Contracts\ProcessRepository;
-use Vzool\Horizon\Contracts\SupervisorRepository;
-use Vzool\Horizon\Contracts\MasterSupervisorRepository;
+use Thedigit\Horizon\MasterSupervisor;
+use Thedigit\Horizon\ProcessInspector;
+use Thedigit\Horizon\Contracts\ProcessRepository;
+use Thedigit\Horizon\Contracts\SupervisorRepository;
+use Thedigit\Horizon\Contracts\MasterSupervisorRepository;
 
 class PurgeCommand extends Command
 {
@@ -29,9 +29,9 @@ class PurgeCommand extends Command
     /**
      * Execute the console command.
      *
-     * @param  \Vzool\Horizon\Contracts\MasterSupervisorRepository  $masters
-     * @param  \Vzool\Horizon\Contracts\SupervisorRepository  $supervisors
-     * @param  \Vzool\Horizon\Contracts\ProcessRepository  $processes
+     * @param  \Thedigit\Horizon\Contracts\MasterSupervisorRepository  $masters
+     * @param  \Thedigit\Horizon\Contracts\SupervisorRepository  $supervisors
+     * @param  \Thedigit\Horizon\Contracts\ProcessRepository  $processes
      * @return void
      */
     public function handle(MasterSupervisorRepository $masters,
@@ -49,8 +49,8 @@ class PurgeCommand extends Command
      * Purge any orphan processes.
      *
      * @param  string  $master
-     * @param  \Vzool\Horizon\Contracts\SupervisorRepository  $supervisors
-     * @param  \Vzool\Horizon\Contracts\ProcessRepository  $processes
+     * @param  \Thedigit\Horizon\Contracts\SupervisorRepository  $supervisors
+     * @param  \Thedigit\Horizon\Contracts\ProcessRepository  $processes
      * @return void
      */
     public function purge($master,
@@ -76,7 +76,7 @@ class PurgeCommand extends Command
      * Record the orphaned Horizon processes.
      *
      * @param  string  $master
-     * @param  \Vzool\Horizon\Contracts\ProcessRepository  $processes
+     * @param  \Thedigit\Horizon\Contracts\ProcessRepository  $processes
      * @return void
      */
     protected function recordOrphans($master, ProcessRepository $processes)

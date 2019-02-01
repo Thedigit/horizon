@@ -1,8 +1,8 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature\Fakes;
+namespace Thedigit\Horizon\Tests\Feature\Fakes;
 
-use Vzool\Horizon\Supervisor;
+use Thedigit\Horizon\Supervisor;
 
 class SupervisorWithFakeExit extends Supervisor
 {

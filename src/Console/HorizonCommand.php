@@ -1,11 +1,11 @@
 <?php
 
-namespace Vzool\Horizon\Console;
+namespace Thedigit\Horizon\Console;
 
 use Illuminate\Console\Command;
-use Vzool\Horizon\MasterSupervisor;
-use Vzool\Horizon\ProvisioningPlan;
-use Vzool\Horizon\Contracts\MasterSupervisorRepository;
+use Thedigit\Horizon\MasterSupervisor;
+use Thedigit\Horizon\ProvisioningPlan;
+use Thedigit\Horizon\Contracts\MasterSupervisorRepository;
 
 class HorizonCommand extends Command
 {

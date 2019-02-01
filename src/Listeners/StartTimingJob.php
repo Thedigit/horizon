@@ -1,23 +1,23 @@
 <?php
 
-namespace Vzool\Horizon\Listeners;
+namespace Thedigit\Horizon\Listeners;
 
-use Vzool\Horizon\Stopwatch;
-use Vzool\Horizon\Events\JobReserved;
+use Thedigit\Horizon\Stopwatch;
+use Thedigit\Horizon\Events\JobReserved;
 
 class StartTimingJob
 {
     /**
      * The stopwatch instance.
      *
-     * @var \Vzool\Horizon\Stopwatch
+     * @var \Thedigit\Horizon\Stopwatch
      */
     public $watch;
 
     /**
      * Create a new listener instance.
      *
-     * @param  \Vzool\Horizon\Stopwatch  $watch
+     * @param  \Thedigit\Horizon\Stopwatch  $watch
      * @return void
      */
     public function __construct(Stopwatch $watch)
@@ -28,7 +28,7 @@ class StartTimingJob
     /**
      * Handle the event.
      *
-     * @param  \Vzool\Horizon\Events\JobReserved  $event
+     * @param  \Thedigit\Horizon\Events\JobReserved  $event
      * @return void
      */
     public function handle(JobReserved $event)

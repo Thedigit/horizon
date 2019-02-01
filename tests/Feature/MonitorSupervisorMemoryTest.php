@@ -1,13 +1,13 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature;
+namespace Thedigit\Horizon\Tests\Feature;
 
 use Mockery;
-use Vzool\Horizon\Supervisor;
-use Vzool\Horizon\SupervisorOptions;
-use Vzool\Horizon\Tests\IntegrationTest;
-use Vzool\Horizon\Events\SupervisorLooped;
-use Vzool\Horizon\Listeners\MonitorSupervisorMemory;
+use Thedigit\Horizon\Supervisor;
+use Thedigit\Horizon\SupervisorOptions;
+use Thedigit\Horizon\Tests\IntegrationTest;
+use Thedigit\Horizon\Events\SupervisorLooped;
+use Thedigit\Horizon\Listeners\MonitorSupervisorMemory;
 
 class MonitorSupervisorMemoryTest extends IntegrationTest
 {

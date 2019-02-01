@@ -1,15 +1,15 @@
 <?php
 
-namespace Vzool\Horizon\SupervisorCommands;
+namespace Thedigit\Horizon\SupervisorCommands;
 
-use Vzool\Horizon\Supervisor;
+use Thedigit\Horizon\Supervisor;
 
 class Balance
 {
     /**
      * Process the command.
      *
-     * @param  \Vzool\Horizon\Supervisor  $supervisor
+     * @param  \Thedigit\Horizon\Supervisor  $supervisor
      * @param  array  $options
      * @return void
      */

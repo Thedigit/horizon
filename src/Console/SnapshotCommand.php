@@ -1,10 +1,10 @@
 <?php
 
-namespace Vzool\Horizon\Console;
+namespace Thedigit\Horizon\Console;
 
-use Vzool\Horizon\Lock;
+use Thedigit\Horizon\Lock;
 use Illuminate\Console\Command;
-use Vzool\Horizon\Contracts\MetricsRepository;
+use Thedigit\Horizon\Contracts\MetricsRepository;
 
 class SnapshotCommand extends Command
 {

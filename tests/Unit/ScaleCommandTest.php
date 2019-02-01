@@ -1,11 +1,11 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Unit;
+namespace Thedigit\Horizon\Tests\Unit;
 
 use Mockery;
-use Vzool\Horizon\Supervisor;
-use Vzool\Horizon\Tests\UnitTest;
-use Vzool\Horizon\SupervisorCommands\Scale;
+use Thedigit\Horizon\Supervisor;
+use Thedigit\Horizon\Tests\UnitTest;
+use Thedigit\Horizon\SupervisorCommands\Scale;
 
 class ScaleCommandTest extends UnitTest
 {

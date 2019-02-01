@@ -1,14 +1,14 @@
 <?php
 
-namespace Vzool\Horizon;
+namespace Thedigit\Horizon;
 
 class SupervisorFactory
 {
     /**
      * Create a new supervisor instance.
      *
-     * @param  \Vzool\Horizon\SupervisorOptions  $options
-     * @return \Vzool\Horizon\Supervisor
+     * @param  \Thedigit\Horizon\SupervisorOptions  $options
+     * @return \Thedigit\Horizon\Supervisor
      */
     public function make(SupervisorOptions $options)
     {

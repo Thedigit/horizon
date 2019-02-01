@@ -1,13 +1,13 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature;
+namespace Thedigit\Horizon\Tests\Feature;
 
 use Mockery;
 use Cake\Chronos\Chronos;
-use Vzool\Horizon\Stopwatch;
+use Thedigit\Horizon\Stopwatch;
 use Illuminate\Support\Facades\Queue;
-use Vzool\Horizon\Tests\IntegrationTest;
-use Vzool\Horizon\Contracts\MetricsRepository;
+use Thedigit\Horizon\Tests\IntegrationTest;
+use Thedigit\Horizon\Contracts\MetricsRepository;
 
 class MetricsTest extends IntegrationTest
 {

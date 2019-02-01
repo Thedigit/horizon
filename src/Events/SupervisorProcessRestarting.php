@@ -1,22 +1,22 @@
 <?php
 
-namespace Vzool\Horizon\Events;
+namespace Thedigit\Horizon\Events;
 
-use Vzool\Horizon\SupervisorProcess;
+use Thedigit\Horizon\SupervisorProcess;
 
 class SupervisorProcessRestarting
 {
     /**
      * The supervisor process instance.
      *
-     * @var \Vzool\Horizon\SupervisorProcess
+     * @var \Thedigit\Horizon\SupervisorProcess
      */
     public $process;
 
     /**
      * Create a new event instance.
      *
-     * @param  \Vzool\Horizon\SupervisorProcess  $process
+     * @param  \Thedigit\Horizon\SupervisorProcess  $process
      * @return void
      */
     public function __construct(SupervisorProcess $process)

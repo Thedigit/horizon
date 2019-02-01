@@ -1,9 +1,9 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Unit;
+namespace Thedigit\Horizon\Tests\Unit;
 
-use Vzool\Horizon\Stopwatch;
-use Vzool\Horizon\Tests\UnitTest;
+use Thedigit\Horizon\Stopwatch;
+use Thedigit\Horizon\Tests\UnitTest;
 
 class StopwatchTest extends UnitTest
 {

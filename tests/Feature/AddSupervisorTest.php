@@ -1,13 +1,13 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature;
+namespace Thedigit\Horizon\Tests\Feature;
 
-use Vzool\Horizon\PhpBinary;
-use Vzool\Horizon\MasterSupervisor;
-use Vzool\Horizon\SupervisorOptions;
-use Vzool\Horizon\Tests\IntegrationTest;
-use Vzool\Horizon\Contracts\HorizonCommandQueue;
-use Vzool\Horizon\MasterSupervisorCommands\AddSupervisor;
+use Thedigit\Horizon\PhpBinary;
+use Thedigit\Horizon\MasterSupervisor;
+use Thedigit\Horizon\SupervisorOptions;
+use Thedigit\Horizon\Tests\IntegrationTest;
+use Thedigit\Horizon\Contracts\HorizonCommandQueue;
+use Thedigit\Horizon\MasterSupervisorCommands\AddSupervisor;
 
 class AddSupervisorTest extends IntegrationTest
 {

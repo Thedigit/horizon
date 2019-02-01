@@ -1,12 +1,12 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature;
+namespace Thedigit\Horizon\Tests\Feature;
 
 use Illuminate\Support\Facades\Redis;
-use Vzool\Horizon\MasterSupervisor;
-use Vzool\Horizon\ProvisioningPlan;
-use Vzool\Horizon\Tests\IntegrationTest;
-use Vzool\Horizon\MasterSupervisorCommands\AddSupervisor;
+use Thedigit\Horizon\MasterSupervisor;
+use Thedigit\Horizon\ProvisioningPlan;
+use Thedigit\Horizon\Tests\IntegrationTest;
+use Thedigit\Horizon\MasterSupervisorCommands\AddSupervisor;
 
 class ProvisioningPlanTest extends IntegrationTest
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Vzool\Horizon\Contracts;
+namespace Thedigit\Horizon\Contracts;
 
-use Vzool\Horizon\MasterSupervisor;
+use Thedigit\Horizon\MasterSupervisor;
 
 interface MasterSupervisorRepository
 {
@@ -39,7 +39,7 @@ interface MasterSupervisorRepository
     /**
      * Update the information about the given master supervisor.
      *
-     * @param  \Vzool\Horizon\MasterSupervisor  $master
+     * @param  \Thedigit\Horizon\MasterSupervisor  $master
      * @return void
      */
     public function update(MasterSupervisor $master);

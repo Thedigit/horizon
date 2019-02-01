@@ -1,12 +1,12 @@
 <?php
 
-namespace Vzool\Horizon;
+namespace Thedigit\Horizon;
 
 use Closure;
 use Cake\Chronos\Chronos;
 use Symfony\Component\Process\Process;
-use Vzool\Horizon\Events\UnableToLaunchProcess;
-use Vzool\Horizon\Events\WorkerProcessRestarting;
+use Thedigit\Horizon\Events\UnableToLaunchProcess;
+use Thedigit\Horizon\Events\WorkerProcessRestarting;
 
 class WorkerProcess
 {

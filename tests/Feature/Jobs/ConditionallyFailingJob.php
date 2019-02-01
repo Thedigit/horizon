@@ -1,6 +1,6 @@
 <?php
 
-namespace Vzool\Horizon\Tests\Feature\Jobs;
+namespace Thedigit\Horizon\Tests\Feature\Jobs;
 
 use Illuminate\Queue\InteractsWithQueue;
 

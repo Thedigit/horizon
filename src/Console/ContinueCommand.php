@@ -1,11 +1,11 @@
 <?php
 
-namespace Vzool\Horizon\Console;
+namespace Thedigit\Horizon\Console;
 
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
-use Vzool\Horizon\MasterSupervisor;
-use Vzool\Horizon\Contracts\MasterSupervisorRepository;
+use Thedigit\Horizon\MasterSupervisor;
+use Thedigit\Horizon\Contracts\MasterSupervisorRepository;
 
 class ContinueCommand extends Command
 {

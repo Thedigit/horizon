@@ -1,8 +1,8 @@
 <?php
 
-namespace Vzool\Horizon\Http\Controllers;
+namespace Thedigit\Horizon\Http\Controllers;
 
-use Vzool\Horizon\Jobs\RetryFailedJob;
+use Thedigit\Horizon\Jobs\RetryFailedJob;
 
 class RetryController extends Controller
 {
