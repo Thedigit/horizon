@@ -4,6 +4,7 @@ namespace Laravel\Horizon\Console;
 
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
+use Illuminate\Queue\InteractsWithTime;
 use Laravel\Horizon\MasterSupervisor;
 use Laravel\Horizon\Contracts\MasterSupervisorRepository;
 
